@@ -1,223 +1,454 @@
 /*
- * 文化祭タスク管理システム用スタイル
- * Tailwind CSSのコンセプトに基づき、全要素に丸みと影を適用
+ * 文化祭タスクシステム UIスタイル (最終調整版 - レスポンシブ最適化)
  */
 
-:root {
-    --primary-color: #3b82f6; /* Tailwind blue-500 */
-    --secondary-color: #10b981; /* Tailwind emerald-500 */
-    --background-color: #f3f4f6; /* Tailwind gray-100 */
-    --card-background: #ffffff;
-    --text-color: #1f2937;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+/* 0. 共通ユーティリティ */
+.hidden {
+    /* 最重要: hiddenクラスが最優先で適用されるようにする */
+    display: none !important;
 }
 
+/* 1. 基本レイアウトとフォント */
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    margin: 0;
-    padding: 20px 0;
+    background-color: #f0f3f8; 
+    font-family: 'Inter', 'Helvetica', 'Arial', sans-serif;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
 }
 
 .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 15px;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0;
 }
 
-/* ヘッダーと日付/時刻 */
-header {
-    text-align: center;
+/* 2. ヘッダーカードのスタイル (日時) */
+.header-card {
+    background-color: #ffffff; 
+    padding: 24px 32px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); 
     margin-bottom: 30px;
-}
-
-.header-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--primary-color);
-    margin: 0 0 5px 0;
-}
-
-.datetime {
-    font-size: 1.1rem;
-    color: #6b7280;
-    font-weight: 600;
-}
-
-/* セクションカードの共通スタイル */
-.section-card {
-    background-color: var(--card-background);
-    padding: 20px;
-    margin-bottom: 25px;
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s;
-}
-
-.section-card:hover {
-    transform: translateY(-2px);
-}
-
-.section-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-color);
-    border-bottom: 2px solid #e5e7eb;
-    padding-bottom: 10px;
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-/* 入力グループ */
-.input-group {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 15px;
+    flex-direction: column; 
+    align-items: center; 
+    gap: 15px; 
+    width: 90%; 
+    max-width: 800px;
+    margin-top: 20px; 
+    transition: transform 0.3s ease;
 }
 
-.input-text, .input-select {
-    padding: 10px 15px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    flex-grow: 1;
-    font-size: 1rem;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-    min-width: 120px;
+.date-text {
+    font-size: 1.2rem;
+    color: #333; 
+    font-weight: 600; 
 }
 
-.add-button {
-    padding: 10px 15px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.4);
+.time-weather {
+    display: flex;
+    align-items: center;
+    gap: 30px; 
 }
 
-.update-button {
-    background-color: var(--secondary-color);
-    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.4);
+.time-text {
+    font-size: 3.5rem; 
+    font-weight: 900; 
+    color: #1a1a1a; 
+    letter-spacing: -2px; 
 }
 
-.add-button:hover {
-    background-color: #2563eb;
-    transform: translateY(-1px);
+.weather-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background-color: #e5e7eb; 
+    border-radius: 12px;
+    min-width: 50px;
+    color: #666;
+    font-size: 0.9rem;
+    min-height: 40px; 
 }
 
-.update-button:hover {
-    background-color: #059669;
+/* 3. メインコンテンツグリッド */
+.main-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 25px;
+    width: 100%;
+    max-width: 1200px;
 }
 
-/* リストコンテナ */
-.list-container {
+/* 4. カードの一般的なスタイル */
+.card {
+    background-color: #ffffff; 
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    min-height: 180px;
 }
 
-/* リストアイテムの共通スタイル */
+.card-title {
+    font-size: 1.3rem; 
+    font-weight: 800; 
+    color: #222; 
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.icon-main { color: #4f46e5; }
+.danger-icon { color: #dc2626; }
+.danger-title { border-bottom: 2px solid #fee2e2; }
+
+.card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* 5. 緊急事態セクションのレイアウト調整 */
+.emergency-section {
+    grid-column: span 3;
+    margin-bottom: 20px;
+    order: -2;
+}
+.active-emergency-section {
+    grid-column: span 3;
+    margin-bottom: 20px;
+    order: -1;
+    background-color: #fee2e2; 
+    border: 3px solid #ef4444;
+    padding: 20px 25px;
+}
+.alert-message-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #dc2626;
+    margin-bottom: 15px;
+}
+
+/* 6. グリッドアイテムの配置調整 */
+.main-content > section:nth-child(3) { 
+    min-height: 400px;
+}
+
+
+/* 7. フォーム要素とボタン */
+.input-form, .emergency-controls { 
+    display: flex; 
+    gap: 8px; 
+    margin-top: 10px; 
+    flex-wrap: nowrap; 
+}
+
+.input-form input[type="text"],
+.input-form select,
+.time-input-group input[type="time"],
+.emergency-controls select,
+.crowd-select { 
+    padding: 10px 12px; 
+    border: 1px solid #aaa; 
+    border-radius: 8px; 
+    flex-grow: 1; 
+    flex-shrink: 1; 
+    min-width: 30px; 
+    background-color: #fcfcfc; 
+}
+.time-input-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn { 
+    flex-shrink: 0; 
+    padding: 10px 15px; 
+    border-radius: 8px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: background-color 0.2s; 
+    white-space: nowrap; 
+    color: white !important; 
+    border: none;
+}
+.btn:hover { transform: translateY(-1px); }
+
+.primary-btn { background-color: #4f46e5; } 
+.primary-btn:hover { background-color: #4338ca; }
+.accent-btn { background-color: #10b981; } 
+.accent-btn:hover { background-color: #059669; }
+.secondary-btn { background-color: #6b7280; } 
+.secondary-btn:hover { background-color: #4b5563; }
+.danger-btn { background-color: #ef4444; } 
+.danger-btn:hover { background-color: #dc2626; }
+
+
+/* 8. リストアイテム (タスク, 落とし物, 混雑状況) */
+ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 15px;
+}
 .list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f9fafb;
-    padding: 12px 15px;
-    border-radius: 8px;
-    border-left: 5px solid var(--primary-color);
-    font-size: 1rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    border-left: 5px solid transparent; 
+    padding-left: 10px;
+    margin-left: -10px;
 }
-
+.list-item:last-child {
+    border-bottom: none;
+}
 .list-content {
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
 }
-
 .list-text {
     font-weight: 600;
+    color: #333;
+    margin-bottom: 3px;
 }
-
 .list-meta {
-    font-size: 0.85rem;
-    color: #6b7280;
-    margin-top: 2px;
+    font-size: 0.8rem;
+    color: #777;
 }
 
-.delete-button {
-    background: none;
-    border: none;
-    color: #ef4444; /* Tailwind red-500 */
-    cursor: pointer;
-    font-size: 1.2rem;
-    padding: 5px;
-    margin-left: 10px;
-    transition: color 0.2s;
+/* 9. シフトテーブル */
+.shift-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+.shift-table th, .shift-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+.shift-table th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+    color: #555;
 }
 
-.delete-button:hover {
-    color: #b91c1c;
+
+/* 10. カスタムアラートのスタイル */
+.alert-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none; 
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.alert-overlay:not(.hidden) {
+    display: flex; 
 }
 
-/* 特定セクションの装飾 */
-.emergency-section .status-display {
+.alert-box {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+.alert-header {
+    background-color: #dc2626;
     padding: 15px;
-    font-size: 1.2rem;
-    font-weight: 700;
     text-align: center;
-    border-radius: 8px;
-    background-color: #fef2f2; /* Red background for attention */
-    color: #dc2626; /* Red text */
-    margin-top: 10px;
-    border: 2px solid #dc2626;
+}
+.alert-indicator {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.alert-body {
+    padding: 25px;
+    text-align: center;
+}
+.alert-body h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #222;
+    margin-bottom: 10px;
+}
+.alert-body p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+.button-group {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+}
+.ok-button {
+    background-color: #dc2626;
+    flex-grow: 1;
+}
+.cancel-button {
+    background-color: #6b7280;
+    flex-grow: 1;
 }
 
-.lost-found-section .list-item {
-    border-left-color: #f59e0b; /* Amber */
+/* 11. 全画面緊急事態通知 */
+/* ★修正ポイント3：点滅廃止と黒背景・赤文字化★ */
+.full-screen-alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #1a1a1a; /* 黒背景に変更 */
+    color: #ef4444; /* 赤文字に変更 */
+    display: none; 
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 999;
+}
+.full-screen-alert:not(.hidden) {
+    display: flex; 
 }
 
-.shift-section .list-item {
-    border-left-color: #8b5cf6; /* Violet */
+.full-screen-content {
+    /* 点滅(animation: blink)を削除 */
 }
-
-.status-section .list-item {
-    border-left-color: var(--secondary-color); /* Emerald */
+.warning-text {
+    display: block;
+    font-size: 2rem;
+    font-weight: 900;
+    margin: 10px 0;
 }
+.full-screen-content h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    margin: 20px 0;
+}
+/* @keyframes blink を削除 */
 
-/* モバイル対応 */
-@media (max-width: 600px) {
-    .header-title {
-        font-size: 2rem;
+
+/* 12. レスポンシブデザインの最適化 */
+
+/* --- 中サイズ (タブレット・小型ノートPC: 1024px以下) --- */
+@media (max-width: 1024px) {
+    .main-content {
+        /* グリッドを3列から2列に変更 */
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* 緊急事態セクションは引き続き全幅 (2列) */
+    .emergency-section, 
+    .active-emergency-section {
+        grid-column: span 2;
+    }
+    
+    /* B. 処理中のタスク (3番目) と C. 落とし物 (4番目) は横並び */
+    .main-content > section:nth-child(3), 
+    .main-content > section:nth-child(4) {
+        grid-column: span 1;
+    }
+    
+    /* D. 役員シフト (5番目) は幅を広く使ってテーブルの視認性を確保 */
+    .main-content > section:nth-child(5) { 
+        grid-column: span 2; /* 2列全体を使用 */
     }
 
-    .section-title {
-        font-size: 1.3rem;
+    /* E. 混雑状況 (6番目) は単独で1列に */
+    .main-content > section:nth-child(6) {
+        grid-column: span 1;
     }
 
-    .input-group {
-        flex-direction: column;
-        gap: 8px;
+    .card {
+        padding: 20px; /* パディングを少し減らす */
+    }
+}
+
+/* --- 小サイズ (スマートフォン: 640px以下) --- */
+@media (max-width: 640px) {
+    body { padding: 10px; }
+    
+    /* メインコンテンツはすべて1列に積み重ねる */
+    .main-content {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    /* すべてのセクションが全幅 (1列) を占める */
+    .main-content > section, 
+    .emergency-section, 
+    .active-emergency-section,
+    .main-content > section:nth-child(3), 
+    .main-content > section:nth-child(4),
+    .main-content > section:nth-child(5), 
+    .main-content > section:nth-child(6) {
+        grid-column: span 1;
     }
 
-    .input-text, .input-select, .add-button {
+    /* ヘッダーカードの調整 */
+    .header-card {
+        padding: 15px 20px;
         width: 100%;
-        min-width: unset;
-    }
-    
-    .list-item {
+        /* 時刻と日付を縦に並べ、中央揃えを維持 */
         flex-direction: column;
-        align-items: flex-start;
-        padding: 10px;
+    }
+
+    .time-weather {
+        width: 100%;
+        justify-content: space-around; /* 時刻と天気を両端に寄せる */
+        gap: 10px;
     }
     
-    .delete-button {
-        margin-left: 0;
-        margin-top: 5px;
-        align-self: flex-end;
+    .time-text {
+        font-size: 2.5rem;
+    }
+    .date-text {
+        font-size: 1rem;
+    }
+    
+    /* フォーム要素の調整 */
+    /* 入力フォーム全体を縦並びにする */
+    .input-form, .emergency-controls {
+        flex-direction: column;
+    }
+    /* 時刻入力グループは横並びを維持 */
+    .time-input-group {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+    }
+    /* ボタンは全幅にする */
+    .btn {
+        width: 100%;
+    }
+
+    /* シフトテーブルのフォントを小さく */
+    .shift-table {
+        font-size: 0.85rem;
+    }
+    .shift-table th, .shift-table td {
+        padding: 8px 5px;
     }
 }

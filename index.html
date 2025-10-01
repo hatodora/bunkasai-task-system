@@ -3,184 +3,1146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文化祭 役員連絡システム</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>文化祭 役員連絡システム (Firestore)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* CSSスタイル */
+        /* 共通設定 */
+        :root {
+            --primary: #3b82f6; /* Blue 500 */
+            --accent: #10b981; /* Emerald 500 */
+            --danger: #ef4444; /* Red 500 */
+            --secondary: #6b7280; /* Gray 500 */
+            --bg-light: #f3f4f6; /* Gray 100 */
+            --bg-dark: #ffffff; /* White */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: #1f2937; /* Gray 800 */
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* カードのスタイル */
+        .card {
+            background-color: var(--bg-dark);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .icon-main {
+            color: var(--primary);
+            margin-right: 8px;
+            font-size: 1.5rem;
+        }
+        .danger-icon {
+            color: var(--danger);
+            margin-right: 8px;
+            font-size: 1.5rem;
+        }
+        .danger-title {
+            color: var(--danger);
+        }
+
+        /* グリッドレイアウト */
+        .main-content {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        @media (min-width: 1024px) {
+            .main-content {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .emergency-section, .active-emergency-section {
+                grid-column: 1 / 4; 
+            }
+            .main-content > section:nth-child(3), 
+            .main-content > section:nth-child(4) {
+                grid-column: span 1;
+            }
+            .main-content > section:nth-child(5), 
+            .main-content > section:nth-child(6) {
+                grid-column: span 1;
+            }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .main-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .emergency-section, .active-emergency-section {
+                grid-column: 1 / 3;
+            }
+        }
+
+        /* ヘッダーカード (日時・天気) */
+        .header-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .date-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        .time-weather {
+            display: flex;
+            align-items: center;
+        }
+        .time-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-right: 20px;
+        }
+        .weather-info {
+            display: flex;
+            align-items: center;
+            color: var(--primary);
+        }
+        .weather-icon {
+            margin-right: 4px;
+        }
+
+
+        /* ボタンの共通スタイル */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .primary-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        .primary-btn:hover {
+            background-color: #2563eb; 
+        }
+        .accent-btn {
+            background-color: var(--accent);
+            color: white;
+        }
+        .accent-btn:hover {
+            background-color: #059669; 
+        }
+        .danger-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+        .danger-btn:hover {
+            background-color: #dc2626; 
+        }
+        .secondary-btn {
+            background-color: #e5e7eb; 
+            color: #4b5563; 
+        }
+        .secondary-btn:hover {
+            background-color: #d1d5db; 
+        }
+
+        /* フォームとインプット */
+        .input-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            align-items: stretch;
+        }
+        .input-form input[type="text"], 
+        .input-form select,
+        .input-form .time-input-group input[type="time"] {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            transition: border-color 0.2s;
+        }
+        .input-form input[type="text"]:focus,
+        .input-form select:focus,
+        .input-form .time-input-group input[type="time"]:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .input-form button {
+            flex-shrink: 0;
+        }
+        .time-input-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-grow: 1;
+        }
+        .time-input-group span {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        .crowd-select {
+            flex-grow: 1;
+            min-width: 100px;
+        }
+
+        /* リストスタイル */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #e5e7eb;
+            transition: background-color 0.1s;
+        }
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        .list-content {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .list-text {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .list-meta {
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+        .history-item {
+            opacity: 0.6;
+            font-style: italic;
+        }
+        .complete-button, .delete-button {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
+
+        /* 緊急事態セクション */
+        .emergency-controls {
+            display: flex;
+            gap: 10px;
+        }
+        #emergency-select {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+        }
+        
+        /* 警報発令中セクション */
+        .active-emergency-section {
+            border: 2px solid var(--danger);
+            background-color: #fef2f2; 
+        }
+        .alert-message-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #b91c1c; 
+            margin-bottom: 15px;
+        }
+
+        /* シフトテーブル */
+        .shift-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .shift-table th, .shift-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .shift-table th {
+            background-color: var(--bg-light);
+            font-weight: 700;
+            color: #4b5563;
+        }
+        .shift-table td:last-child {
+            text-align: right;
+        }
+
+        /* ユーティリティ */
+        .hidden {
+            display: none !important;
+        }
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        /* 1. カスタムアラートオーバーレイ */
+        .alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .alert-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        .alert-header {
+            margin-bottom: 20px;
+        }
+        .alert-indicator {
+            display: inline-block;
+            background-color: var(--danger);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+        #alert-message {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #374151;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* 2. 全画面緊急事態通知 */
+        .full-screen-alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #111827; 
+            color: var(--danger); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000; 
+            text-align: center;
+            animation: pulse 1.5s infinite; 
+        }
+        .full-screen-content {
+            padding: 20px;
+            max-width: 80%;
+        }
+        .full-screen-alert h1 {
+            font-size: 3rem; 
+            font-weight: 900;
+            margin: 15px 0;
+        }
+        .warning-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: block;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 10px; }
+            .header-card { flex-direction: column; align-items: flex-start; }
+            .time-weather { margin-top: 10px; }
+            .time-text { font-size: 1.25rem; }
+            .date-text { font-size: 1rem; }
+            .emergency-controls, .input-form { flex-direction: column; }
+            .emergency-controls button { width: 100%; }
+            .full-screen-alert h1 { font-size: 2rem; }
+            .warning-text { font-size: 1.2rem; }
+        }
+    </style>
 </head>
 <body>
-    <div class="background-blur"></div>
+
     <div class="container">
-        <header class="card header-card">
-            <h2 id="current-date" class="date-text"></h2>
+        <header class="header-card">
+            <div class="date-text" id="current-date"></div>
             <div class="time-weather">
-                <h1 id="current-time" class="time-text"></h1>
-                <!-- 天気情報は今回は実装せず、表示だけ残します -->
+                <div class="time-text" id="current-time"></div>
                 <div class="weather-info">
-                    <span id="weather-icon" class="weather-icon"></span>
-                    <span id="weather" class="weather-text"></span>
+                    <span class="weather-icon material-icons-outlined" id="weather-icon">cloud_off</span>
+                    <span id="weather">天気機能無効</span>
                 </div>
             </div>
         </header>
 
-        <section class="emergency-section card">
-            <h2 class="card-title">緊急事態</h2>
-            <div class="emergency-controls">
-                <select id="emergency-select">
-                    <option value="">緊急事態を選択...</option>
-                    <option value="強風">強風</option>
-                    <option value="降水">降水</option>
-                    <option value="人身事故">人身事故</option>
-                    <option value="火事">火事</option>
-                    <option value="不審者">不審者</option>
-                </select>
-                <button id="alert-button" class="btn primary-btn">警報発令</button>
-            </div>
-        </section>
-
-        <!-- アクティブな緊急事態を表示するセクション -->
-        <section id="active-emergency-section" class="active-emergency-section card" style="display: none;">
-            <h2 class="card-title">現在の緊急事態</h2>
-            <h3 id="active-emergency-message"></h3>
-            <button id="resolve-button" class="btn danger-btn">問題解決</button>
-        </section>
-
         <main class="main-content">
-            <section class="task-section card">
+            
+            <section class="card emergency-section" id="emergency-section">
+                <h2 class="card-title"><span class="material-icons-outlined danger-icon">campaign</span> 緊急事態</h2>
+                <div class="emergency-controls">
+                    <select id="emergency-select">
+                        <option value="" disabled selected>緊急事態を選択...</option>
+                        <option value="生徒体調不良">生徒体調不良</option>
+                        <option value="不審者">不審者</option>
+                        <option value="火災">火災</option>
+                        <option value="備品破損">備品破損</option>
+                        <option value="一般来場者トラブル">一般来場者トラブル</option>
+                        <option value="気象悪化">気象悪化</option>
+                        <option value="営業停止">営業停止</option>
+                    </select>
+                    <button class="btn danger-btn" id="alert-button">警報発令</button>
+                </div>
+            </section>
+            
+            <section class="card active-emergency-section hidden" id="active-emergency-section">
+                <h2 class="card-title danger-title"><span class="material-icons-outlined danger-icon">warning</span> 警報発令中</h2>
+                <p class="alert-message-text" id="active-emergency-message">緊急事態発生！</p>
+                <button class="btn secondary-btn" id="resolve-button">問題解決</button>
+            </section>
+
+            <section class="card" style="min-height: 400px;">
                 <div class="card-header-flex">
-                    <h2 class="card-title">処理中のタスク <span class="material-icons-outlined">task_alt</span></h2>
-                    <button id="toggle-task-history" class="btn secondary-btn">履歴を表示</button>
+                    <h2 class="card-title"><span class="material-icons-outlined icon-main">task_alt</span> 処理中のタスク</h2>
+                    <button class="btn secondary-btn" id="toggle-task-history">履歴を表示</button>
                 </div>
                 <ul id="task-list">
-                </ul>
-                <ul id="task-history-list" class="history-list" style="display: none;">
+                    <li class="list-item"><p class="list-meta">現在、タスクはありません。</p></li>
                 </ul>
                 <form id="task-form" class="input-form">
                     <input type="text" id="task-input" placeholder="新しいタスクを追加..." required>
                     <button type="submit" class="btn accent-btn">追加</button>
                 </form>
+                <ul id="task-history-list" class="hidden">
+                </ul>
             </section>
 
-            <section class="lost-found-section card">
+            <section class="card">
                 <div class="card-header-flex">
-                    <h2 class="card-title">落とし物 <span class="material-icons-outlined">search</span></h2>
-                    <button id="toggle-lost-found-history" class="btn secondary-btn">解決済みを表示</button>
+                    <h2 class="card-title"><span class="material-icons-outlined icon-main">search</span> 落とし物</h2>
+                    <button class="btn secondary-btn" id="toggle-lost-found-history">解決済みを表示</button>
                 </div>
                 <ul id="lost-found-list">
-                </ul>
-                <ul id="lost-found-history-list" class="history-list" style="display: none;">
+                    <li class="list-item"><p class="list-meta">現在、落とし物はありません。</p></li>
                 </ul>
                 <form id="lost-found-form" class="input-form">
                     <input type="text" id="lost-found-item-input" placeholder="品名" required>
                     <input type="text" id="lost-found-location-input" placeholder="場所" required>
                     <button type="submit" class="btn accent-btn">追加</button>
                 </form>
+                <ul id="lost-found-history-list" class="hidden">
+                </ul>
             </section>
-            
-            <section class="shift-section card">
-                <h2 class="card-title">役員シフト <span class="material-icons-outlined">calendar_today</span></h2>
-                <table id="shift-table" class="shift-table">
+
+            <section class="card">
+                <h2 class="card-title"><span class="material-icons-outlined icon-main">people_alt</span> 役員シフト</h2>
+                <table class="shift-table" id="shift-table">
                     <thead>
-                        <tr>
-                            <th>時間</th>
-                            <th>担当者</th>
-                            <th>役割</th>
-                            <th></th>
-                        </tr>
+                        <tr><th>時間</th><th>担当者</th><th>役割</th><th></th></tr>
                     </thead>
                     <tbody>
-                        <!-- シフトデータがここに挿入されます -->
+                        <tr><td colspan="4"><p class="list-meta">現在、シフトは設定されていません。</p></td></tr>
                     </tbody>
                 </table>
-                <form id="shift-form" class="input-form">
-                    <div class="time-input-group">
-                        <input type="time" id="shift-start-time-input" required value="09:00">
-                        <span>〜</span>
-                        <input type="time" id="shift-end-time-input" required value="10:00">
+                <form id="shift-form">
+                    <div class="input-form">
+                        <div class="time-input-group">
+                            <input type="time" id="shift-start-time-input" value="09:00" required>
+                            <span>〜</span>
+                            <input type="time" id="shift-end-time-input" value="18:00" required>
+                        </div>
                     </div>
-                    <input type="text" id="shift-person-input" placeholder="担当者" required>
-                    <input type="text" id="shift-role-input" placeholder="役割" required>
-                    <button type="submit" class="btn accent-btn">追加</button>
+                    <div class="input-form">
+                        <input type="text" id="shift-person-input" placeholder="担当者" required>
+                        <input type="text" id="shift-role-input" placeholder="役割" required>
+                        <button type="submit" class="btn primary-btn">追加</button>
+                    </div>
                 </form>
             </section>
-
-            <section class="crowd-section card">
-                <h2 class="card-title">混雑状況 <span class="material-icons-outlined">groups</span></h2>
+            
+            <section class="card">
+                <h2 class="card-title"><span class="material-icons-outlined icon-main">bar_chart</span> 混雑状況</h2>
                 <ul id="crowd-list">
-                    <!-- 混雑状況データがここに挿入されます -->
+                    <li class="list-item"><p class="list-meta">状況データがありません。</p></li>
                 </ul>
                 <form id="crowd-form" class="input-form">
-                    <select id="crowd-location-input" class="crowd-select">
-                        <option value="">場所を選択...</option>
-                        <option value="出入り口">出入り口</option>
-                        <option value="学友会本部">学友会本部</option>
-                        <option value="サレジアンモール">サレジアンモール</option>
-                        <option value="調理場">調理場</option>
-                        <option value="体育館">体育館</option>
-                        <option value="グラウンド">グラウンド</option>
+                    <select id="crowd-location-input" class="crowd-select" required>
+                        <option value="" disabled selected>場所を選択...</option>
+                        <option value="体育館">サレジアンモール</option>
+                        <option value="中庭">調理場</option>
+                        <option value="カフェテリア">正面入り口</option>
+                        <option value="メインゲート">本部</option>
                     </select>
-                    <select id="crowd-status-input" class="crowd-select">
-                        <option value="">状況を選択...</option>
-                        <option value="空いています">空いています (◎)</option>
-                        <option value="普通">普通 (○)</option>
-                        <option value="混雑">混雑 (△)</option>
-                        <option value="入場制限中">入場制限中 (×)</option>
+                    <select id="crowd-status-input" class="crowd-select" required>
+                        <option value="" disabled selected>状況を選択...</option>
+                        <option value="空いています">空いています</option>
+                        <option value="やや混雑">やや混雑</option>
+                        <option value="混雑">混雑</option>
+                        <option value="入場制限中">入場制限中</option>
                     </select>
-                    <button type="submit" class="btn accent-btn">更新</button>
+                    <button type="submit" class="btn primary-btn">更新</button>
                 </form>
             </section>
-
         </main>
     </div>
-
-    <!-- OK/キャンセルを確認するカスタムアラート -->
-    <div id="alert-overlay" class="alert-overlay">
+    
+    <div class="alert-overlay hidden" id="alert-overlay">
         <div class="alert-box">
             <div class="alert-header">
                 <span class="alert-indicator">警告</span>
             </div>
             <div class="alert-body">
-                <h1 id="alert-message"></h1>
-                <p>OKボタンを押すと、この警告が発令され、全端末に通知されます。</p>
+                <h1 id="alert-message">OKボタンを押すと、この警報が発令され、全端末に通知されます。</h1>
                 <div class="button-group">
-                    <button id="alert-ok-button" class="btn ok-button">OK</button>
-                    <button id="alert-cancel-button" class="btn cancel-button">キャンセル</button>
+                    <button class="btn danger-btn ok-button" id="alert-ok-button">OK</button>
+                    <button class="btn secondary-btn cancel-button" id="alert-cancel-button">キャンセル</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 全画面緊急事態通知 -->
-    <div id="full-screen-alert" class="full-screen-alert">
+    <div class="full-screen-alert hidden" id="full-screen-alert">
         <div class="full-screen-content">
-            <span class="warning-text">EMERGENCY</span>
-            <h1 id="full-screen-message"></h1>
-            <span class="warning-text">EMERGENCY</span>
+            <span class="warning-text">【警告】</span>
+            <h1>緊急事態発生</h1>
+            <h1 id="full-screen-message">内容</h1>
+            <span class="warning-text">すぐに状況を確認し、指示に従ってください</span>
         </div>
     </div>
 
-    <!-- Firebase SDKの読み込み -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
     <script>
-        // Firebaseの初期化設定 (以前の対話で提供されたものを使用)
+        // ----------------------------------------------------------
+        // ローカルファイル実行対応のため、スクリプトを直接HTMLに統合
+        // ----------------------------------------------------------
+        
+        // Firebase設定 (あなたのFirebase設定に置き換えてください)
         const firebaseConfig = {
-            apiKey: "AIzaSyCC3y2RqmnDyUOEp0fP3L78ucwrtCTC6Hk",
-            authDomain: "bunkasai-task-system.firebaseapp.com",
-            databaseURL: "https://bunkasai-task-system-default-rtdb.firebaseio.com",
-            projectId: "bunkasai-task-system",
-            storageBucket: "bunkasai-task-system.firebasestorage.app",
-            messagingSenderId: "919831201875",
-            appId: "1:919831201875:web:8e5d5c7d5b93a51c5f1ea6",
-            measurementId: "G-S4QDHV7C55"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Canvas環境でグローバル変数が定義されているかチェックし、使用する
+        const config = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
+        
+        // Firebaseの初期化
+        firebase.initializeApp(config);
+        const dbInstance = firebase.firestore(); 
+        
+        // Firestoreログレベル設定 (デバッグ用)
+        firebase.firestore.setLogLevel('Debug');
+
+        // 現在発令中の警報メッセージを保持
+        let activeAlert = null; 
+        // 警報発令中にのみtrueになるフラグ (全画面通知が既に表示されたか追跡する)
+        let alertIsActive = false; 
+
+        // --- 1. Firestore参照の定義 ---
+        const COLLECTIONS = {
+            tasks: 'tasks',
+            tasksHistory: 'tasksHistory',
+            emergency: 'emergency', 
+            lostFound: 'lostFound',
+            lostFoundHistory: 'lostFoundHistory',
+            shifts: 'shifts',
+            crowd: 'crowd' 
         };
 
-        // Firebaseを初期化 (グローバルスコープでアクセス可能にするため、varを使用)
-        var firebaseApp = firebase.initializeApp(firebaseConfig);
-        var database = firebaseApp.database();
-    </script> 
-    <script src="script.js"></script>
+        // ==========================================================
+        // 2. ユーティリティ関数
+        // ==========================================================
+        
+        /** タイムスタンプを読みやすい形式に変換する */
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return '';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            const h = String(date.getHours()).padStart(2, '0');
+            const min = String(date.getMinutes()).padStart(2, '0');
+            return `${m}/${d} ${h}:${min}`;
+        }
+
+        /** 現在の日時をヘッダーに表示する */
+        function updateDateTime() {
+            const now = new Date();
+            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            
+            const dateElement = document.getElementById('current-date');
+            const timeElement = document.getElementById('current-time');
+
+            if (dateElement) dateElement.textContent = now.toLocaleDateString('ja-JP', dateOptions);
+            if (timeElement) timeElement.textContent = now.toLocaleTimeString('ja-JP', timeOptions);
+        }
+
+        /** 天気関連の表示をクリアする */
+        function clearWeatherDisplay() {
+            const iconElement = document.getElementById('weather-icon');
+            const textElement = document.getElementById('weather');
+            
+            if (iconElement) {
+                iconElement.className = 'weather-icon material-icons-outlined'; 
+                iconElement.textContent = 'cloud_off';
+            }
+            if (textElement) {
+                textElement.textContent = '天気機能無効';
+            }
+        }
+        
+        // ==========================================================
+        // 3. HTMLレンダリング関数
+        // ==========================================================
+
+        /** リストアイテムHTMLを生成する */
+        function createListItemHtml(item, key, type) {
+            const isTask = type === 'task';
+            
+            let content = '';
+            let meta = `追加: ${formatTimestamp(item.timestamp)}`;
+            let buttonText = isTask ? '&#x2714; 完了' : '&#x2714; 解決'; 
+
+            if (isTask) {
+                content = `<span class="list-text">${item.name}</span>`;
+            } else {
+                content = `<span class="list-text">品名: ${item.name} / 場所: ${item.location}</span>`;
+            }
+
+            return `
+                <li class="list-item">
+                    <div class="list-content">
+                        ${content}
+                        <span class="list-meta">${meta}</span>
+                    </div>
+                    <button class="complete-button btn accent-btn" data-key="${key}" data-type="${type}" title="${buttonText.includes('完了') ? '完了' : '解決'}">${buttonText}</button>
+                </li>
+            `;
+        }
+
+        /** 履歴アイテムHTMLを生成する */
+        function createHistoryItemHtml(item, key, type) {
+            const completionMeta = item.completedAt ? `完了: ${formatTimestamp(item.completedAt)}` : '完了日時不明';
+            const originalMeta = `追加: ${formatTimestamp(item.timestamp)}`;
+
+            let content = '';
+            let statusText = type === 'task' ? '(完了)' : '(解決済み)';
+
+            if (type === 'task') {
+                content = `<span class="list-text">${item.name} ${statusText}</span>`;
+            } else { // lost-found history
+                content = `<span class="list-text">品名: ${item.name} / 場所: ${item.location} ${statusText}</span>`;
+            }
+
+            return `
+                <li class="list-item history-item">
+                    <div class="list-content">
+                        ${content}
+                        <span class="list-meta">${completionMeta} | ${originalMeta}</span>
+                    </div>
+                    <button class="delete-button btn danger-btn" data-key="${key}" data-type="${type}" title="完全削除">&times; 削除</button>
+                </li>
+            `;
+        }
+
+        /** リストをレンダリングし、ボタンリスナーを再設定する */
+        function renderList(listId, items, type, isHistory) {
+            const listEl = document.getElementById(listId);
+            if (!listEl) return;
+            
+            listEl.innerHTML = ''; // 既存のリスト内容を完全にクリア
+
+            if (items.length === 0) {
+                listEl.innerHTML = `<li class="list-item"><p class="list-meta">現在、${isHistory ? '履歴' : type === 'task' ? 'タスク' : '落とし物'}はありません。</p></li>`;
+                return;
+            }
+
+            items.forEach(item => {
+                const html = isHistory 
+                    ? createHistoryItemHtml(item, item.id, type)
+                    : createListItemHtml(item, item.id, type);
+                listEl.innerHTML += html;
+            });
+
+            // ボタンリスナーを再設定
+            if (isHistory) {
+                listEl.querySelectorAll('.delete-button').forEach(button => {
+                    button.addEventListener('click', handleHistoryDelete);
+                });
+            } else {
+                listEl.querySelectorAll('.complete-button').forEach(button => {
+                    button.addEventListener('click', handleItemComplete);
+                });
+            }
+        }
+
+        /** シフトテーブルをレンダリングする */
+        function renderShifts(shifts) {
+            const shiftTableBodyEl = document.querySelector('#shift-table tbody');
+            if (!shiftTableBodyEl) return;
+            
+            shiftTableBodyEl.innerHTML = '';
+            
+            if (shifts.length === 0) {
+                shiftTableBodyEl.innerHTML = '<tr><td colspan="4"><p class="list-meta">現在、シフトは設定されていません。</p></td></tr>';
+                return;
+            }
+
+            shifts.forEach(shift => {
+                const row = shiftTableBodyEl.insertRow();
+                row.dataset.key = shift.id;
+
+                row.innerHTML = `
+                    <td>${shift.start}〜${shift.end}</td>
+                    <td>${shift.person}</td>
+                    <td>${shift.role}</td>
+                    <td><button class="delete-button btn danger-btn" data-key="${shift.id}">削除</button></td>
+                `;
+            });
+            
+            // 削除ボタンのイベントリスナーを再登録
+            shiftTableBodyEl.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    dbInstance.collection(COLLECTIONS.shifts).doc(e.currentTarget.dataset.key).delete()
+                        .catch(error => console.error("Error removing shift: ", error));
+                });
+            });
+        }
+
+        /** 混雑状況リストをレンダリングする */
+        function renderCrowd(statuses) {
+            const crowdListEl = document.getElementById('crowd-list');
+            if (!crowdListEl) return;
+            
+            crowdListEl.innerHTML = '';
+
+            if (statuses.length === 0) {
+                crowdListEl.innerHTML = '<li class="list-item"><p class="list-meta">状況データがありません。</p></li>';
+                return;
+            }
+            
+            statuses.forEach(status => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-item';
+                
+                let color = '#3b82f6'; 
+                if (status.level === '入場制限中') color = '#dc2626'; 
+                else if (status.level === '混雑') color = '#f59e0b'; 
+                else if (status.level === 'やや混雑') color = '#fbbf24'; 
+                
+                listItem.style.borderLeftColor = color; 
+                
+                listItem.innerHTML = `
+                    <div class="list-content">
+                        <span class="list-text">場所: ${status.location} / 状況: ${status.level}</span>
+                        <span class="list-meta">最終更新: ${formatTimestamp(status.timestamp)}</span>
+                    </div>
+                    `;
+                crowdListEl.appendChild(listItem);
+            });
+        }
+
+
+        // ==========================================================
+        // 4. Firestoreリアルタイムデータ処理 (onSnapshot)
+        // ==========================================================
+        
+        /** Firestoreの購読を開始する (compat APIを使用) */
+        function subscribeToData() {
+            if (!dbInstance) return;
+
+            // --- A. タスク処理 ---
+            dbInstance.collection(COLLECTIONS.tasks).orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+                const tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderList('task-list', tasks, 'task', false);
+            });
+
+            dbInstance.collection(COLLECTIONS.tasksHistory).orderBy('completedAt', 'desc').onSnapshot((snapshot) => {
+                const history = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderList('task-history-list', history, 'task', true);
+            });
+
+            // --- B. 落とし物処理 ---
+            dbInstance.collection(COLLECTIONS.lostFound).orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+                const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderList('lost-found-list', items, 'lost-found', false);
+            });
+
+            dbInstance.collection(COLLECTIONS.lostFoundHistory).orderBy('completedAt', 'desc').onSnapshot((snapshot) => {
+                const history = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderList('lost-found-history-list', history, 'lost-found', true);
+            });
+
+            // --- C. 緊急事態処理 ---
+            dbInstance.collection(COLLECTIONS.emergency).doc('active').onSnapshot((docSnapshot) => {
+                const status = docSnapshot.data();
+                handleEmergencyStatusChange(status);
+            }, error => {
+                console.error("Error listening to emergency status: ", error);
+            });
+            
+            // --- D. シフト処理 ---
+            dbInstance.collection(COLLECTIONS.shifts).orderBy('start', 'asc').onSnapshot((snapshot) => {
+                const shifts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderShifts(shifts);
+            });
+            
+            // --- E. 混雑状況処理 ---
+            dbInstance.collection(COLLECTIONS.crowd).onSnapshot((snapshot) => {
+                const crowdStatuses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderCrowd(crowdStatuses);
+            });
+        }
+
+
+        // ==========================================================
+        // 5. イベントハンドラとDOM操作
+        // ==========================================================
+
+        function setupEventListeners() {
+            // A. タスクフォーム
+            document.getElementById('task-form').addEventListener('submit', handleTaskSubmit);
+            document.getElementById('toggle-task-history').addEventListener('click', handleHistoryToggle('task-history-list', 'toggle-task-history', '履歴'));
+            
+            // B. 落とし物フォーム
+            document.getElementById('lost-found-form').addEventListener('submit', handleLostFoundSubmit);
+            document.getElementById('toggle-lost-found-history').addEventListener('click', handleHistoryToggle('lost-found-history-list', 'toggle-lost-found-history', '解決済み'));
+            
+            // C. 緊急事態
+            document.getElementById('alert-button').addEventListener('click', handleAlertActivation);
+            document.getElementById('resolve-button').addEventListener('click', handleAlertResolutionConfirmation); 
+            
+            // OK/キャンセルボタンにデフォルトのリスナーを設定
+            document.getElementById('alert-ok-button').addEventListener('click', confirmAlertActivation); 
+            document.getElementById('alert-cancel-button').addEventListener('click', closeAlertOverlay);
+
+            // D. シフトフォーム
+            document.getElementById('shift-form').addEventListener('submit', handleShiftSubmit);
+            
+            // E. 混雑状況フォーム
+            document.getElementById('crowd-form').addEventListener('submit', handleCrowdSubmit);
+        }
+        
+        // --- カスタムアラートを閉じる共通関数 ---
+        function closeAlertOverlay() {
+            document.getElementById('alert-overlay').classList.add('hidden');
+            const okBtn = document.getElementById('alert-ok-button');
+            okBtn.onclick = confirmAlertActivation; 
+            document.getElementById('alert-cancel-button').style.display = 'inline-block';
+            document.getElementById('alert-message').textContent = 'OKボタンを押すと、この警報が発令され、全端末に通知されます。'; 
+        }
+
+
+        // --- リスト処理 ---
+        
+        /** * タスクまたは落とし物を完了/解決済みとして履歴に移動し、現在のリストから削除する
+         * ★async/await を使用した修正版関数 (ロジックは前回と同様)★
+         */
+        async function handleItemComplete(e) {
+            e.preventDefault(); 
+            
+            const key = e.currentTarget.dataset.key;
+            const type = e.currentTarget.dataset.type;
+            
+            const sourceCollection = type === 'task' ? COLLECTIONS.tasks : COLLECTIONS.lostFound;
+            const historyCollection = type === 'task' ? COLLECTIONS.tasksHistory : COLLECTIONS.lostFoundHistory;
+            
+            const docRef = dbInstance.collection(sourceCollection).doc(key);
+
+            try {
+                // 1. 元のドキュメントのデータを取得する
+                const docSnapshot = await docRef.get();
+                console.log(`[${type}] ドキュメント取得成功。Key: ${key}`);
+
+                if (!docSnapshot.exists) {
+                    console.warn(`[${type}] ドキュメントが存在しませんでした。Key: ${key}`);
+                    return; 
+                }
+                
+                const item = docSnapshot.data();
+                
+                // 2. 履歴コレクションに新しいアイテムを追加する
+                await dbInstance.collection(historyCollection).add({ 
+                    ...item, 
+                    completedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                });
+                console.log(`[${type}] 履歴への追加成功。Key: ${key}`);
+
+                // 3. 元のコレクションからドキュメントを削除する
+                await docRef.delete(); 
+                console.log(`[${type}] 現在のリストからの削除成功。Key: ${key}`);
+                
+                // 削除が成功すると onSnapshot が発火し、リストが自動的に更新され、項目が画面から消えます。
+                
+            } catch (error) {
+                // エラーが発生した場合、コンソールに出力し、リストはそのままにしておく
+                console.error(`[${type}] 完了/削除中にエラーが発生しました。Key: ${key}`, error);
+            }
+        }
+
+        function handleHistoryDelete(e) {
+            const key = e.currentTarget.dataset.key;
+            const type = e.currentTarget.dataset.type;
+            
+            const historyCollection = type === 'task' ? COLLECTIONS.tasksHistory : COLLECTIONS.lostFoundHistory;
+            
+            dbInstance.collection(historyCollection).doc(key).delete()
+                .catch(error => console.error("Error removing history item: ", error));
+        }
+
+        function handleHistoryToggle(listId, buttonId, textPrefix) {
+            return () => {
+                const listEl = document.getElementById(listId);
+                const buttonEl = document.getElementById(buttonId);
+                
+                if (!listEl || !buttonEl) return;
+                
+                const isHidden = listEl.classList.contains('hidden');
+                listEl.classList.toggle('hidden');
+                buttonEl.textContent = isHidden ? `${textPrefix}を非表示` : `${textPrefix}を表示`;
+            };
+        }
+
+        // --- フォーム処理 (変更なし) ---
+        function handleTaskSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('task-input');
+            const taskName = input.value.trim();
+            if (taskName) {
+                dbInstance.collection(COLLECTIONS.tasks).add({
+                    name: taskName,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                input.value = '';
+            }
+        }
+
+        function handleLostFoundSubmit(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('lost-found-item-input');
+            const locationInput = document.getElementById('lost-found-location-input');
+            const name = nameInput.value.trim();
+            const location = locationInput.value.trim();
+
+            if (name && location) {
+                dbInstance.collection(COLLECTIONS.lostFound).add({
+                    name: name,
+                    location: location,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                nameInput.value = '';
+                locationInput.value = '';
+            }
+        }
+
+        function handleShiftSubmit(e) {
+            e.preventDefault();
+            const startInput = document.getElementById('shift-start-time-input');
+            const endInput = document.getElementById('shift-end-time-input');
+            const personInput = document.getElementById('shift-person-input');
+            const roleInput = document.getElementById('shift-role-input');
+            
+            const start = startInput.value;
+            const end = endInput.value;
+            const person = personInput.value.trim();
+            const role = roleInput.value.trim();
+
+            if (start && end && person && role) {
+                dbInstance.collection(COLLECTIONS.shifts).add({
+                    start: start,
+                    end: end,
+                    person: person,
+                    role: role,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        }
+
+        function handleCrowdSubmit(e) {
+            e.preventDefault();
+            const locationInput = document.getElementById('crowd-location-input');
+            const levelInput = document.getElementById('crowd-status-input');
+            
+            const location = locationInput.value;
+            const level = levelInput.value;
+
+            if (location && level) {
+                dbInstance.collection(COLLECTIONS.crowd).doc(location).set({
+                    location: location,
+                    level: level,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                locationInput.value = '';
+                levelInput.value = '';
+            }
+        }
+
+
+        // --- 緊急事態処理 (変更なし) ---
+
+        /** 警報発令の確認ダイアログを表示する */
+        function handleAlertActivation() {
+            const value = document.getElementById('emergency-select').value;
+            if (!value) {
+                document.getElementById('alert-message').textContent = '発令する緊急事態を選択してください。';
+                document.getElementById('alert-cancel-button').style.display = 'none'; 
+                document.getElementById('alert-ok-button').onclick = closeAlertOverlay; 
+                document.getElementById('alert-overlay').classList.remove('hidden'); 
+                return;
+            }
+            
+            const message = `選択: ${value}。OKボタンを押すと、この警報が発令され、全端末に通知されます。`;
+            document.getElementById('alert-message').textContent = message;
+            document.getElementById('alert-cancel-button').style.display = 'inline-block';
+            document.getElementById('alert-ok-button').onclick = confirmAlertActivation; 
+            document.getElementById('alert-overlay').classList.remove('hidden'); 
+        }
+
+        /** カスタムアラートのOKボタンが押された時の処理 (発令) */
+        function confirmAlertActivation() {
+            const value = document.getElementById('emergency-select').value;
+            
+            dbInstance.collection(COLLECTIONS.emergency).doc('active').set({ 
+                value: value,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                closeAlertOverlay(); 
+                document.getElementById('emergency-select').value = ''; 
+            }).catch(error => console.error("Error setting emergency status: ", error));
+        }
+
+        /** 警報解除の確認ダイアログを表示する */
+        function handleAlertResolutionConfirmation() {
+            const message = `現在の警報（${activeAlert || '不明'}）を解除し、通知を停止しますか？`;
+            
+            document.getElementById('alert-message').textContent = message;
+            document.getElementById('alert-overlay').classList.remove('hidden');
+            
+            const okBtn = document.getElementById('alert-ok-button');
+            okBtn.onclick = handleAlertResolution; 
+            
+            document.getElementById('alert-cancel-button').style.display = 'inline-block';
+        }
+
+        /** 警報解除の実行処理 (問題解決ボタンから実行) */
+        function handleAlertResolution() {
+            dbInstance.collection(COLLECTIONS.emergency).doc('active').delete()
+                .then(() => {
+                    closeAlertOverlay();
+                    console.log("緊急事態ステータスを削除しました。");
+                }).catch(error => console.error("Error clearing emergency status: ", error));
+        }
+
+
+        /**
+         * Firestoreからの緊急事態ステータス変更を処理する
+         */
+        function handleEmergencyStatusChange(status) {
+            const activeSection = document.getElementById('active-emergency-section');
+            const emergencySection = document.getElementById('emergency-section');
+            const fullScreenAlert = document.getElementById('full-screen-alert');
+            const fullScreenMessage = document.getElementById('full-screen-message');
+            const activeMessage = document.getElementById('active-emergency-message');
+
+            if (status && status.value) {
+                // 発令中
+                activeAlert = status.value;
+                const timestamp = formatTimestamp(status.timestamp);
+                
+                // 1. ダッシュボード上の表示を更新 (永続表示)
+                if (activeMessage) activeMessage.textContent = `${status.value} 発生 (${timestamp}) - 問題解決ボタンで解除`;
+                if (emergencySection) emergencySection.classList.add('hidden'); 
+                if (activeSection) activeSection.classList.remove('hidden'); 
+
+                // 2. 全画面通知の表示
+                if (!alertIsActive) {
+                    alertIsActive = true; 
+                    
+                    if (fullScreenMessage) fullScreenMessage.textContent = status.value;
+                    
+                    fullScreenAlert.classList.remove('hidden');
+                    console.log("全画面通知を表示しました。5秒後に自動終了します。");
+                    
+                    // 3. 5秒後に全画面表示だけを終了する
+                    setTimeout(() => {
+                        fullScreenAlert.classList.add('hidden');
+                        console.log("全画面通知を自動終了しました。");
+                    }, 5000); 
+                }
+                
+            } else {
+                // 解除時
+                activeAlert = null;
+                alertIsActive = false; 
+                
+                if (emergencySection) emergencySection.classList.remove('hidden'); 
+                if (activeSection) activeSection.classList.add('hidden'); 
+                if (fullScreenAlert) fullScreenAlert.classList.add('hidden'); 
+
+                closeAlertOverlay();
+            }
+        }
+        
+        // ==========================================================
+        // 6. アプリケーション開始
+        // ==========================================================
+        
+        window.onload = function() {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            clearWeatherDisplay();
+
+            setupEventListeners();
+            subscribeToData();
+        };
+
+    </script>
 </body>
 </html>
