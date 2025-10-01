@@ -17,6 +17,7 @@
             <h2 id="current-date" class="date-text"></h2>
             <div class="time-weather">
                 <h1 id="current-time" class="time-text"></h1>
+                <!-- 天気情報は今回は実装せず、表示だけ残します -->
                 <div class="weather-info">
                     <span id="weather-icon" class="weather-icon"></span>
                     <span id="weather" class="weather-text"></span>
@@ -39,6 +40,7 @@
             </div>
         </section>
 
+        <!-- アクティブな緊急事態を表示するセクション -->
         <section id="active-emergency-section" class="active-emergency-section card" style="display: none;">
             <h2 class="card-title">現在の緊急事態</h2>
             <h3 id="active-emergency-message"></h3>
@@ -85,16 +87,18 @@
                             <th>時間</th>
                             <th>担当者</th>
                             <th>役割</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        </tbody>
+                        <!-- シフトデータがここに挿入されます -->
+                    </tbody>
                 </table>
                 <form id="shift-form" class="input-form">
                     <div class="time-input-group">
-                        <input type="time" id="shift-start-time-input" required>
+                        <input type="time" id="shift-start-time-input" required value="09:00">
                         <span>〜</span>
-                        <input type="time" id="shift-end-time-input" required>
+                        <input type="time" id="shift-end-time-input" required value="10:00">
                     </div>
                     <input type="text" id="shift-person-input" placeholder="担当者" required>
                     <input type="text" id="shift-role-input" placeholder="役割" required>
@@ -105,7 +109,8 @@
             <section class="crowd-section card">
                 <h2 class="card-title">混雑状況 <span class="material-icons-outlined">groups</span></h2>
                 <ul id="crowd-list">
-                    </ul>
+                    <!-- 混雑状況データがここに挿入されます -->
+                </ul>
                 <form id="crowd-form" class="input-form">
                     <select id="crowd-location-input" class="crowd-select">
                         <option value="">場所を選択...</option>
@@ -113,13 +118,15 @@
                         <option value="学友会本部">学友会本部</option>
                         <option value="サレジアンモール">サレジアンモール</option>
                         <option value="調理場">調理場</option>
+                        <option value="体育館">体育館</option>
+                        <option value="グラウンド">グラウンド</option>
                     </select>
                     <select id="crowd-status-input" class="crowd-select">
                         <option value="">状況を選択...</option>
-                        <option value="空いています">空いています</option>
-                        <option value="普通">普通</option>
-                        <option value="混雑">混雑</option>
-                        <option value="入場制限中">入場制限中</option>
+                        <option value="空いています">空いています (◎)</option>
+                        <option value="普通">普通 (○)</option>
+                        <option value="混雑">混雑 (△)</option>
+                        <option value="入場制限中">入場制限中 (×)</option>
                     </select>
                     <button type="submit" class="btn accent-btn">更新</button>
                 </form>
@@ -128,6 +135,7 @@
         </main>
     </div>
 
+    <!-- OK/キャンセルを確認するカスタムアラート -->
     <div id="alert-overlay" class="alert-overlay">
         <div class="alert-box">
             <div class="alert-header">
@@ -135,7 +143,7 @@
             </div>
             <div class="alert-body">
                 <h1 id="alert-message"></h1>
-                <p>OKボタンを押すと、この警告が発令されます。</p>
+                <p>OKボタンを押すと、この警告が発令され、全端末に通知されます。</p>
                 <div class="button-group">
                     <button id="alert-ok-button" class="btn ok-button">OK</button>
                     <button id="alert-cancel-button" class="btn cancel-button">キャンセル</button>
@@ -144,6 +152,7 @@
         </div>
     </div>
 
+    <!-- 全画面緊急事態通知 -->
     <div id="full-screen-alert" class="full-screen-alert">
         <div class="full-screen-content">
             <span class="warning-text">EMERGENCY</span>
@@ -152,30 +161,26 @@
         </div>
     </div>
 
+    <!-- Firebase SDKの読み込み -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        // Firebaseの初期化設定 (以前の対話で提供されたものを使用)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCC3y2RqmnDyUOEp0fP3L78ucwrtCTC6Hk",
+            authDomain: "bunkasai-task-system.firebaseapp.com",
+            databaseURL: "https://bunkasai-task-system-default-rtdb.firebaseio.com",
+            projectId: "bunkasai-task-system",
+            storageBucket: "bunkasai-task-system.firebasestorage.app",
+            messagingSenderId: "919831201875",
+            appId: "1:919831201875:web:8e5d5c7d5b93a51c5f1ea6",
+            measurementId: "G-S4QDHV7C55"
+        };
+
+        // Firebaseを初期化 (グローバルスコープでアクセス可能にするため、varを使用)
+        var firebaseApp = firebase.initializeApp(firebaseConfig);
+        var database = firebaseApp.database();
+    </script> 
     <script src="script.js"></script>
 </body>
 </html>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script>
-        // このfirebaseConfigの中身は、あなたの環境に合わせて置き換えてください
-        const firebaseConfig = {
-            apiKey: "AIzaSyCC3y2RqmnDyUOEp0fP3L78ucwrtCTC6Hk",
-  authDomain: "bunkasai-task-system.firebaseapp.com",
-  databaseURL: "https://bunkasai-task-system-default-rtdb.firebaseio.com",
-  projectId: "bunkasai-task-system",
-  storageBucket: "bunkasai-task-system.firebasestorage.app",
-  messagingSenderId: "919831201875",
-  appId: "1:919831201875:web:8e5d5c7d5b93a51c5f1ea6",
-  measurementId: "G-S4QDHV7C55"
-        };
-
-        // Firebaseを初期化
-        firebase.initializeApp(firebaseConfig);
-    </script>
-    <script src="script.js"></script> 
-</body>
-</html>
-
-

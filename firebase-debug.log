@@ -1,101 +1,50 @@
-[debug] [2025-09-30T14:24:19.741Z] ----------------------------------------------------------------------
-[debug] [2025-09-30T14:24:19.747Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy
-[debug] [2025-09-30T14:24:19.747Z] CLI Version:   14.17.0
-[debug] [2025-09-30T14:24:19.747Z] Platform:      darwin
-[debug] [2025-09-30T14:24:19.747Z] Node Version:  v22.20.0
-[debug] [2025-09-30T14:24:19.747Z] Time:          Tue Sep 30 2025 23:24:19 GMT+0900 (日本標準時)
-[debug] [2025-09-30T14:24:19.748Z] ----------------------------------------------------------------------
+[debug] [2025-10-01T02:46:59.954Z] ----------------------------------------------------------------------
+[debug] [2025-10-01T02:46:59.955Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy
+[debug] [2025-10-01T02:46:59.955Z] CLI Version:   14.17.0
+[debug] [2025-10-01T02:46:59.955Z] Platform:      darwin
+[debug] [2025-10-01T02:46:59.955Z] Node Version:  v22.20.0
+[debug] [2025-10-01T02:46:59.955Z] Time:          Wed Oct 01 2025 11:46:59 GMT+0900 (日本標準時)
+[debug] [2025-10-01T02:46:59.955Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2025-09-30T14:24:19.824Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2025-09-30T14:24:19.824Z] > authorizing via signed-in user (hayadora0903@gmail.com)
-[debug] [2025-09-30T14:24:19.824Z] [iam] checking project bunkasai-task-system for permissions ["firebase.projects.get","firebasehosting.sites.update"]
-[debug] [2025-09-30T14:24:19.824Z] Checked if tokens are valid: true, expires at: 1759243840304
-[debug] [2025-09-30T14:24:19.824Z] Checked if tokens are valid: true, expires at: 1759243840304
-[debug] [2025-09-30T14:24:19.825Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions [none]
-[debug] [2025-09-30T14:24:19.825Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions x-goog-quota-user=projects/bunkasai-task-system
-[debug] [2025-09-30T14:24:19.825Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
-[debug] [2025-09-30T14:24:20.172Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions 200
-[debug] [2025-09-30T14:24:20.172Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
-[debug] [2025-09-30T14:24:20.173Z] Checked if tokens are valid: true, expires at: 1759243840304
-[debug] [2025-09-30T14:24:20.173Z] Checked if tokens are valid: true, expires at: 1759243840304
-[debug] [2025-09-30T14:24:20.173Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system [none]
-[debug] [2025-09-30T14:24:20.576Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system 200
-[debug] [2025-09-30T14:24:20.576Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system {"projectId":"bunkasai-task-system","projectNumber":"919831201875","displayName":"Bunkasai-Task-System","name":"projects/bunkasai-task-system","resources":{"hostingSite":"bunkasai-task-system","realtimeDatabaseInstance":"bunkasai-task-system-default-rtdb"},"state":"ACTIVE","etag":"1_285e0e5a-848e-4a80-85dd-40ba443dc6c3"}
+[debug] [2025-10-01T02:47:00.030Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-01T02:47:00.030Z] > authorizing via signed-in user (hayadora0903@gmail.com)
+[debug] [2025-10-01T02:47:00.030Z] [iam] checking project bunkasai-task-system for permissions ["firebase.projects.get","firebasedatabase.instances.update","firebasehosting.sites.update"]
+[debug] [2025-10-01T02:47:00.030Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:00.030Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:00.030Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions [none]
+[debug] [2025-10-01T02:47:00.030Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions x-goog-quota-user=projects/bunkasai-task-system
+[debug] [2025-10-01T02:47:00.031Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions {"permissions":["firebase.projects.get","firebasedatabase.instances.update","firebasehosting.sites.update"]}
+[debug] [2025-10-01T02:47:00.795Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions 200
+[debug] [2025-10-01T02:47:00.796Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions {"permissions":["firebase.projects.get","firebasedatabase.instances.update","firebasehosting.sites.update"]}
+[debug] [2025-10-01T02:47:00.796Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:00.796Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:00.797Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system [none]
+[debug] [2025-10-01T02:47:01.118Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system 200
+[debug] [2025-10-01T02:47:01.118Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system {"projectId":"bunkasai-task-system","projectNumber":"919831201875","displayName":"Bunkasai-Task-System","name":"projects/bunkasai-task-system","resources":{"hostingSite":"bunkasai-task-system","realtimeDatabaseInstance":"bunkasai-task-system-default-rtdb"},"state":"ACTIVE","etag":"1_285e0e5a-848e-4a80-85dd-40ba443dc6c3"}
+[debug] [2025-10-01T02:47:01.119Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:01.119Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:01.119Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system [none]
+[debug] [2025-10-01T02:47:01.506Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system 200
+[debug] [2025-10-01T02:47:01.506Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system {"projectId":"bunkasai-task-system","projectNumber":"919831201875","displayName":"Bunkasai-Task-System","name":"projects/bunkasai-task-system","resources":{"hostingSite":"bunkasai-task-system","realtimeDatabaseInstance":"bunkasai-task-system-default-rtdb"},"state":"ACTIVE","etag":"1_285e0e5a-848e-4a80-85dd-40ba443dc6c3"}
 [info] 
 [info] === Deploying to 'bunkasai-task-system'...
 [info] 
-[info] i  deploying hosting 
-[debug] [2025-09-30T14:24:20.583Z] Checked if tokens are valid: true, expires at: 1759243840304
-[debug] [2025-09-30T14:24:20.583Z] Checked if tokens are valid: true, expires at: 1759243840304
-[debug] [2025-09-30T14:24:20.583Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions [none]
-[debug] [2025-09-30T14:24:20.583Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
-[debug] [2025-09-30T14:24:22.008Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions 200
-[debug] [2025-09-30T14:41:22.743Z] ----------------------------------------------------------------------
-[debug] [2025-09-30T14:41:22.748Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy
-[debug] [2025-09-30T14:41:22.749Z] CLI Version:   14.17.0
-[debug] [2025-09-30T14:41:22.749Z] Platform:      darwin
-[debug] [2025-09-30T14:41:22.749Z] Node Version:  v22.20.0
-[debug] [2025-09-30T14:41:22.749Z] Time:          Tue Sep 30 2025 23:41:22 GMT+0900 (日本標準時)
-[debug] [2025-09-30T14:41:22.749Z] ----------------------------------------------------------------------
-[debug] 
-[debug] [2025-09-30T14:41:22.829Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2025-09-30T14:41:22.830Z] > authorizing via signed-in user (hayadora0903@gmail.com)
-[debug] [2025-09-30T14:41:22.830Z] [iam] checking project bunkasai-task-system for permissions ["firebase.projects.get","firebasehosting.sites.update"]
-[debug] [2025-09-30T14:41:22.830Z] Checked if tokens are valid: false, expires at: 1759243840304
-[debug] [2025-09-30T14:41:22.830Z] Checked if tokens are valid: false, expires at: 1759243840304
-[debug] [2025-09-30T14:41:22.830Z] > refreshing access token with scopes: []
-[debug] [2025-09-30T14:41:22.831Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
-[debug] [2025-09-30T14:41:22.831Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
-[debug] [2025-09-30T14:41:24.090Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
-[debug] [2025-09-30T14:41:24.091Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
-[debug] [2025-09-30T14:41:24.105Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions [none]
-[debug] [2025-09-30T14:41:24.105Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions x-goog-quota-user=projects/bunkasai-task-system
-[debug] [2025-09-30T14:41:24.105Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
-[debug] [2025-09-30T14:41:24.827Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions 200
-[debug] [2025-09-30T14:41:24.827Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
-[debug] [2025-09-30T14:41:24.828Z] Checked if tokens are valid: true, expires at: 1759246883092
-[debug] [2025-09-30T14:41:24.828Z] Checked if tokens are valid: true, expires at: 1759246883092
-[debug] [2025-09-30T14:41:24.828Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system [none]
-[debug] [2025-09-30T14:41:25.220Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system 200
-[debug] [2025-09-30T14:41:25.220Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system {"projectId":"bunkasai-task-system","projectNumber":"919831201875","displayName":"Bunkasai-Task-System","name":"projects/bunkasai-task-system","resources":{"hostingSite":"bunkasai-task-system","realtimeDatabaseInstance":"bunkasai-task-system-default-rtdb"},"state":"ACTIVE","etag":"1_285e0e5a-848e-4a80-85dd-40ba443dc6c3"}
-[info] 
-[info] === Deploying to 'bunkasai-task-system'...
-[info] 
-[info] i  deploying hosting 
-[debug] [2025-09-30T14:41:25.225Z] Checked if tokens are valid: true, expires at: 1759246883092
-[debug] [2025-09-30T14:41:25.225Z] Checked if tokens are valid: true, expires at: 1759246883092
-[debug] [2025-09-30T14:41:25.226Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions [none]
-[debug] [2025-09-30T14:41:25.226Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
-[debug] [2025-09-30T14:41:26.464Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions 200
-[debug] [2025-09-30T14:55:45.975Z] ----------------------------------------------------------------------
-[debug] [2025-09-30T14:55:45.980Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy
-[debug] [2025-09-30T14:55:45.981Z] CLI Version:   14.17.0
-[debug] [2025-09-30T14:55:45.981Z] Platform:      darwin
-[debug] [2025-09-30T14:55:45.981Z] Node Version:  v22.20.0
-[debug] [2025-09-30T14:55:45.981Z] Time:          Tue Sep 30 2025 23:55:45 GMT+0900 (日本標準時)
-[debug] [2025-09-30T14:55:45.981Z] ----------------------------------------------------------------------
-[debug] 
-[debug] [2025-09-30T14:55:46.057Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2025-09-30T14:55:46.057Z] > authorizing via signed-in user (hayadora0903@gmail.com)
-[debug] [2025-09-30T14:55:46.057Z] [iam] checking project bunkasai-task-system for permissions ["firebase.projects.get","firebasehosting.sites.update"]
-[debug] [2025-09-30T14:55:46.058Z] Checked if tokens are valid: true, expires at: 1759246883092
-[debug] [2025-09-30T14:55:46.058Z] Checked if tokens are valid: true, expires at: 1759246883092
-[debug] [2025-09-30T14:55:46.058Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions [none]
-[debug] [2025-09-30T14:55:46.058Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions x-goog-quota-user=projects/bunkasai-task-system
-[debug] [2025-09-30T14:55:46.058Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
-[debug] [2025-09-30T14:55:46.846Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions 200
-[debug] [2025-09-30T14:55:46.846Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/bunkasai-task-system:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
-[debug] [2025-09-30T14:55:46.847Z] Checked if tokens are valid: true, expires at: 1759246883092
-[debug] [2025-09-30T14:55:46.847Z] Checked if tokens are valid: true, expires at: 1759246883092
-[debug] [2025-09-30T14:55:46.847Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system [none]
-[debug] [2025-09-30T14:55:47.195Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system 200
-[debug] [2025-09-30T14:55:47.195Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/bunkasai-task-system {"projectId":"bunkasai-task-system","projectNumber":"919831201875","displayName":"Bunkasai-Task-System","name":"projects/bunkasai-task-system","resources":{"hostingSite":"bunkasai-task-system","realtimeDatabaseInstance":"bunkasai-task-system-default-rtdb"},"state":"ACTIVE","etag":"1_285e0e5a-848e-4a80-85dd-40ba443dc6c3"}
-[info] 
-[info] === Deploying to 'bunkasai-task-system'...
-[info] 
-[info] i  deploying hosting 
-[debug] [2025-09-30T14:55:47.198Z] Checked if tokens are valid: true, expires at: 1759246883092
-[debug] [2025-09-30T14:55:47.198Z] Checked if tokens are valid: true, expires at: 1759246883092
-[debug] [2025-09-30T14:55:47.198Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions [none]
-[debug] [2025-09-30T14:55:47.198Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
-[debug] [2025-09-30T14:55:48.266Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions 200
+[info] i  deploying database, hosting 
+[info] i  database: checking rules syntax... 
+[debug] [2025-10-01T02:47:01.512Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:01.512Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:01.512Z] >>> [apiv2][query] GET https://firebasedatabase.googleapis.com/v1beta/projects/bunkasai-task-system/locations/-/instances/bunkasai-task-system-default-rtdb [none]
+[debug] [2025-10-01T02:47:02.517Z] <<< [apiv2][status] GET https://firebasedatabase.googleapis.com/v1beta/projects/bunkasai-task-system/locations/-/instances/bunkasai-task-system-default-rtdb 200
+[debug] [2025-10-01T02:47:02.517Z] <<< [apiv2][body] GET https://firebasedatabase.googleapis.com/v1beta/projects/bunkasai-task-system/locations/-/instances/bunkasai-task-system-default-rtdb {"name":"projects/919831201875/locations/us-central1/instances/bunkasai-task-system-default-rtdb","project":"projects/919831201875","databaseUrl":"https://bunkasai-task-system-default-rtdb.firebaseio.com","type":"DEFAULT_DATABASE","state":"ACTIVE"}
+[debug] [2025-10-01T02:47:02.518Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:02.518Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:02.518Z] >>> [apiv2][query] PUT https://bunkasai-task-system-default-rtdb.firebaseio.com/.settings/rules.json dryRun=true
+[debug] [2025-10-01T02:47:02.519Z] >>> [apiv2][body] PUT https://bunkasai-task-system-default-rtdb.firebaseio.com/.settings/rules.json "{\n  \"rules\": {\n    \".read\": \"true\", // 誰でも読み取り可能\n    \".write\": \"true\" // 誰でも書き込み可能\n  }\n}"
+[debug] [2025-10-01T02:47:02.840Z] <<< [apiv2][status] PUT https://bunkasai-task-system-default-rtdb.firebaseio.com/.settings/rules.json 200
+[debug] [2025-10-01T02:47:02.841Z] <<< [apiv2][body] PUT https://bunkasai-task-system-default-rtdb.firebaseio.com/.settings/rules.json {"status":"ok"}
+[info] ✔  database: rules syntax for database bunkasai-task-system-default-rtdb is valid 
+[debug] [2025-10-01T02:47:02.844Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:02.845Z] Checked if tokens are valid: true, expires at: 1759289792649
+[debug] [2025-10-01T02:47:02.845Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions [none]
+[debug] [2025-10-01T02:47:02.845Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2025-10-01T02:47:03.889Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/bunkasai-task-system/versions 200

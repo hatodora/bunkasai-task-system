@@ -1,682 +1,223 @@
+/*
+ * 文化祭タスク管理システム用スタイル
+ * Tailwind CSSのコンセプトに基づき、全要素に丸みと影を適用
+ */
+
+:root {
+    --primary-color: #3b82f6; /* Tailwind blue-500 */
+    --secondary-color: #10b981; /* Tailwind emerald-500 */
+    --background-color: #f3f4f6; /* Tailwind gray-100 */
+    --card-background: #ffffff;
+    --text-color: #1f2937;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+}
+
 body {
     font-family: 'Inter', sans-serif;
-    color: #f0f0f0;
+    background-color: var(--background-color);
+    color: var(--text-color);
     margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    background-color: #222;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    position: relative;
-    /* グラデーション背景をぼかすために少し明るめに */
-    background: linear-gradient(135deg, #1a1a2e, #3a3a52, #16213e);
+    padding: 20px 0;
 }
-
-/* リキッドガラス効果の背景ぼかし */
-.background-blur {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    z-index: -1;
-    /* 背景をぼかすためのダミー要素 */
-    background: linear-gradient(135deg, rgba(26, 26, 46, 0.7), rgba(58, 58, 82, 0.7), rgba(22, 33, 62, 0.7));
-}
-
 
 .container {
-    max-width: 900px; /* 幅を調整 */
-    width: 95%;
-    margin: 30px auto; /* 上下の余白 */
-    display: grid;
-    gap: 20px; /* カード間の余白 */
-    grid-template-columns: 1fr; /* デフォルトは1列 (モバイル優先) */
-    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 15px;
 }
 
-/* 各カードの共通スタイル (リキッドガラス効果) */
-.card {
-    background-color: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    transition: transform 0.2s ease-in-out;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.card-title {
-    font-size: 1.5em;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* ヘッダーカード */
-.header-card {
+/* ヘッダーと日付/時刻 */
+header {
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.15);
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    margin-bottom: 30px;
 }
 
-.date-text {
-    font-size: 1.1em;
-    font-weight: 400;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 10px;
+.header-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin: 0 0 5px 0;
 }
 
-.time-weather {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
-
-.time-text {
-    font-size: 4em;
-    font-weight: 700;
-    margin: 0;
-    line-height: 1;
-}
-
-.weather-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 5px;
-    font-size: 1.2em;
+.datetime {
+    font-size: 1.1rem;
+    color: #6b7280;
     font-weight: 600;
 }
 
-.weather-icon {
-    font-size: 1.5em;
+/* セクションカードの共通スタイル */
+.section-card {
+    background-color: var(--card-background);
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s;
 }
 
-/* ボタンの共通スタイル */
-.btn {
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    border: none;
-}
-
-.btn:hover {
-    filter: brightness(1.2);
+.section-card:hover {
     transform: translateY(-2px);
 }
 
-.btn.primary-btn {
-    background-color: #007aff; /* Apple Blue */
-    color: white;
-}
-
-.btn.accent-btn {
-    background-color: #34c759; /* Apple Green */
-    color: white;
-}
-
-.btn.danger-btn {
-    background-color: #ff3b30; /* Apple Red */
-    color: white;
-}
-
-/* 履歴表示ボタンのスタイル (secondary-btn) */
-.btn.secondary-btn {
-    background-color: rgba(255, 255, 255, 0.15); /* 薄いガラス */
-    color: #fff;
-    padding: 8px 15px;
-    font-size: 0.9em;
-    font-weight: 500;
-}
-
-.btn.secondary-btn:hover {
-    background-color: rgba(255, 255, 255, 0.25);
-    transform: none;
-}
-
-/* フォーム入力 */
-.input-form {
-    display: flex;
-    flex-wrap: wrap; /* スマホで折り返す */
-    gap: 10px;
-    margin-top: 20px;
-    align-items: center; /* 要素の縦位置を揃える */
-}
-
-.input-form input[type="text"], 
-.input-form select {
-    flex-grow: 1; /* 入力欄が利用可能な幅を占める */
-    min-width: 100px; /* 最小幅を設定して、小さくなりすぎないようにする */
-}
-
-.input-form input[type="text"] {
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-    font-size: 1em;
-    outline: none;
-    transition: border-color 0.2s ease;
-}
-
-.input-form input[type="text"]:focus {
-    border-color: #007aff;
-}
-
-.input-form input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-/* ボタンのFlex-Growを抑え、フォーム要素が均等に広がるのを助ける */
-.input-form button {
-    flex-shrink: 0;
-    /* margin-left: auto; /* ボタンを右端に寄せる (好みでコメントアウト) */
-}
-
-/* 時間入力グループのスタイル */
-.time-input-group {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    flex-grow: 1;
-    min-width: 180px;
-}
-
-.time-input-group span {
-    flex-shrink: 0; /* 「〜」が重ならないように */
-}
-
-.time-input-group input[type="time"] {
-    flex-grow: 1;
-    min-width: 70px; /* 小さい画面でも入力できるように最小幅を設定 */
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-    font-size: 1em;
-    outline: none;
-    transition: border-color 0.2s ease;
-}
-
-.time-input-group input[type="time"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-}
-
-select {
-    padding: 10px 15px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-    font-size: 1em;
-    outline: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2C197.3l-139.3%2C139.3c-4.1%2C4.1-9.3%2C6.1-14.5%2C6.1s-10.4-2-14.5-6.1L5.4%2C197.3c-8.2-8.2-8.2-21.4%2C0-29.6c8.2-8.2%2C21.4-8.2%2C29.6%2C0l110.2%2C110.2l110.2-110.2c8.2-8.2%2C21.4-8.2%2C29.6%2C0C295.1%2C175.9%2C295.1%2C189.1%2C287%2C197.3z%22%2F%3E%3C%2Fsvg%3E');
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 12px;
-}
-
-/* リストアイテム */
-ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px;
-}
-
-li {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    margin-bottom: 10px;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1.1em;
-    color: #fff;
-    border-left: 4px solid #007aff;
-    transition: all 0.2s ease-in-out;
-}
-
-li:last-child {
-    margin-bottom: 0;
-}
-
-li button {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: white;
-    border-radius: 8px;
-    padding: 8px 15px;
-    font-size: 0.9em;
-    font-weight: 500;
-}
-
-li button:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-}
-
-li.complete {
-    opacity: 0.5;
-    transform: translateX(10px);
-    border-left-color: #34c759;
-}
-
-/* カードヘッダーのフレックスレイアウト */
-.card-header-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 10px;
+    margin-top: 0;
     margin-bottom: 15px;
 }
 
-.card-header-flex .card-title {
-    margin-bottom: 0; 
-}
-
-/* 緊急事態セクション */
-.emergency-section {
-    background-color: rgba(255, 59, 48, 0.15);
-    border: 1px solid rgba(255, 59, 48, 0.3);
-}
-
-.emergency-section .card-title {
-    color: #ff3b30;
-}
-
-/* 緊急事態セクションのコントロールを修正 */
-.emergency-controls {
+/* 入力グループ */
+.input-group {
     display: flex;
-    flex-wrap: wrap; 
-    justify-content: flex-start;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 10px;
-    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
-/* 常時表示される緊急事態エリア */
-.active-emergency-section {
-    background-color: rgba(255, 59, 48, 0.15);
-    border: 1px solid rgba(255, 59, 48, 0.3);
-    color: #ff3b30;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.active-emergency-section h3 {
-    font-size: 1.8em;
-    font-weight: 700;
-    margin: 10px 0 20px;
-    text-shadow: 0 0 5px rgba(255, 59, 48, 0.5);
-}
-
-.active-emergency-section .card-title {
-    color: #ff3b30;
-}
-
-/* 警告オーバーレイ（フールプルーフ） */
-.alert-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    display: none;
-}
-
-.alert-box {
-    background-color: #1a1a2e;
-    border: 3px solid #ff3b30;
-    color: #ff3b30;
-    padding: 30px;
-    text-align: center;
-    border-radius: 15px;
-    box-shadow: 0 0 25px rgba(255, 59, 48, 0.6);
-    animation: pulse 1s infinite alternate;
-    max-width: 450px;
-    width: 90%;
-}
-
-@keyframes pulse {
-    from { box-shadow: 0 0 25px rgba(255, 59, 48, 0.6); }
-    to { box-shadow: 0 0 35px rgba(255, 59, 48, 0.9); }
-}
-
-.alert-header {
-    margin-bottom: 25px;
-}
-
-.alert-indicator {
-    font-size: 3.5em;
-    font-weight: 800;
-    font-family: 'Inter', sans-serif;
-    border: 4px solid #ff3b30;
-    padding: 8px 30px;
-    display: inline-block;
-    letter-spacing: 2px;
-}
-
-.alert-body h1 {
-    font-size: 2.2em;
-    margin: 15px 0;
-    color: #fff;
-    line-height: 1.3;
-}
-
-.alert-body p {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.1em;
-    margin-top: 15px;
-}
-
-.button-group {
-    margin-top: 30px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
-
-.ok-button, .cancel-button {
-    padding: 12px 25px;
-    font-size: 1.1em;
-    font-weight: 600;
-    border-radius: 10px;
-}
-
-.ok-button {
-    background-color: #ff3b30;
-    color: white;
-}
-
-.cancel-button {
-    background-color: #555;
-    color: white;
-}
-
-/* 全画面警告表示 */
-.full-screen-alert {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    color: #ff3b30;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 2000;
-    display: none;
-}
-
-.full-screen-content {
-    text-align: center;
-    padding: 20px;
-}
-
-.warning-text {
-    font-family: 'Impact', sans-serif;
-    font-size: 4em;
-    line-height: 1;
-    margin: 10px 0;
-    text-shadow: 0 0 8px rgba(255, 59, 48, 0.8);
-    animation: neon-text 1.5s infinite alternate;
-}
-
-@keyframes neon-text {
-    from { text-shadow: 0 0 5px #ff3b30, 0 0 10px #ff3b30, 0 0 15px #ff3b30; }
-    to { text-shadow: 0 0 10px #ff3b30, 0 0 20px #ff3b30, 0 0 30px #ff3b30; }
-}
-
-.full-screen-message {
-    font-family: 'Impact', sans-serif;
-    font-size: 5em;
-    margin: 20px 0;
-    line-height: 1;
-    text-shadow: 0 0 10px rgba(255, 59, 48, 0.8);
-    animation: pulse-text 1s infinite alternate;
-}
-
-@keyframes pulse-text {
-    from { transform: scale(1); opacity: 1;}
-    to { transform: scale(1.05); opacity: 0.9;}
-}
-
-/* シフトテーブルのスタイル */
-.shift-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-    background: transparent;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.shift-table th, .shift-table td {
-    padding: 12px;
-    text-align: left;
-    font-size: 0.95em;
-    color: #f0f0f0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.shift-table th {
-    background-color: rgba(255, 255, 255, 0.08);
-    font-weight: 600;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* シフトテーブルのハイライトスタイル */
-.shift-table tr.active-shift {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-left: 4px solid #007aff; /* Apple Blue */
-}
-
-/* シフト終了済みのアニメーション */
-.shift-table tr.complete {
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: all 0.5s ease-out;
-}
-
-/* 終了済みボタンのスタイル */
-.shift-table .end-shift-btn {
-    padding: 6px 12px;
-    font-size: 0.8em;
-    font-weight: 500;
+.input-text, .input-select {
+    padding: 10px 15px;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
-    background-color: #ff3b30; /* Apple Red */
-    color: white;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s ease-in-out;
+    flex-grow: 1;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    min-width: 120px;
 }
 
-.shift-table .end-shift-btn:hover {
-    filter: brightness(1.2);
+.add-button {
+    padding: 10px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.4);
+}
+
+.update-button {
+    background-color: var(--secondary-color);
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.4);
+}
+
+.add-button:hover {
+    background-color: #2563eb;
     transform: translateY(-1px);
 }
 
-/* 混雑状況のスタイル */
-#crowd-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px;
+.update-button:hover {
+    background-color: #059669;
 }
 
-#crowd-list li {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    margin-bottom: 10px;
-    padding: 15px;
+/* リストコンテナ */
+.list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* リストアイテムの共通スタイル */
+.list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 1.1em;
-    color: #fff;
-    transition: all 0.2s ease-in-out;
-    border: none;
-    border-left: 4px solid transparent;
+    background-color: #f9fafb;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border-left: 5px solid var(--primary-color);
+    font-size: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-/* 混雑状況ステータスの色分け */
-.crowd-status {
-    font-weight: 600;
-    padding: 5px 12px;
-    border-radius: 15px;
-    color: #222;
-    font-size: 0.9em;
-}
-
-.crowd-status-空いています {
-    background-color: #34c759;
-}
-
-.crowd-status-普通 {
-    background-color: #ffcc00;
-}
-
-.crowd-status-混雑 {
-    background-color: #ff3b30;
-}
-
-.crowd-status-入場制限中 {
-    background-color: #5856d6;
-}
-
-/* フォームのselect要素にスタイルを適用 */
-#crowd-form select {
+.list-content {
     flex-grow: 1;
-    min-width: 120px;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-    font-size: 1em;
-    outline: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2C197.3l-139.3%2C139.3c-4.1%2C4.1-9.3%2C6.1-14.5%2C6.1s-10.4-2-14.5-6.1L5.4%2C197.3c-8.2-8.2-8.2-21.4%2C0-29.6c8.2-8.2%2C21.4-8.2%2C29.6%2C0l110.2%2C110.2l110.2-110.2c8.2-8.2%2C21.4-8.2%2C29.6%2C0C295.1%2C175.9%2C295.1%2C189.1%2C287%2C197.3z%22%2F%3E%3C%2Fsvg%3E');
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 12px;
+    display: flex;
+    flex-direction: column;
 }
 
-/* 履歴リストのスタイル */
-.history-list {
-    margin-top: 15px;
-    border-top: 1px dashed rgba(255, 255, 255, 0.2); /* 区切り線 */
-    padding-top: 15px;
+.list-text {
+    font-weight: 600;
 }
 
-.history-list li {
-    background-color: rgba(255, 255, 255, 0.05); /* 履歴はさらに薄く */
-    opacity: 0.8; 
-    border-left-color: #555; /* 履歴の色 */
-    font-size: 1em; /* 少し小さめに */
+.list-meta {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 2px;
 }
 
-/* カード内のメインコンテンツを整えるための共通スタイル */
-.card > .input-form,
-.card > ul,
-.card > .emergency-controls,
-.card > .shift-table {
-    /* これらの要素が縦に並ぶことを保証 */
-    display: block; 
-    width: 100%;
+.delete-button {
+    background: none;
+    border: none;
+    color: #ef4444; /* Tailwind red-500 */
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+    margin-left: 10px;
+    transition: color 0.2s;
 }
 
-/* 処理中のタスクと落とし物セクションの修正 */
-.lost-found-section .input-form input[type="text"] {
-    flex-grow: 1; /* 品名と場所が幅を均等に占めるように */
-    min-width: 100px;
+.delete-button:hover {
+    color: #b91c1c;
 }
 
-/* --- レスポンシブデザインのブレークポイント --- */
+/* 特定セクションの装飾 */
+.emergency-section .status-display {
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 8px;
+    background-color: #fef2f2; /* Red background for attention */
+    color: #dc2626; /* Red text */
+    margin-top: 10px;
+    border: 2px solid #dc2626;
+}
 
-/* 768px以上の画面 (タブレット横〜デスクトップ) */
-@media (min-width: 768px) {
-    .container {
-        max-width: 1200px; /* デスクトップでさらに広げる */
-        /* メインコンテンツを2列（タスク/落とし物とシフト/混雑）にする */
-        grid-template-columns: repeat(2, 1fr); 
-        gap: 30px; /* デスクトップで間隔を広げる */
+.lost-found-section .list-item {
+    border-left-color: #f59e0b; /* Amber */
+}
+
+.shift-section .list-item {
+    border-left-color: #8b5cf6; /* Violet */
+}
+
+.status-section .list-item {
+    border-left-color: var(--secondary-color); /* Emerald */
+}
+
+/* モバイル対応 */
+@media (max-width: 600px) {
+    .header-title {
+        font-size: 2rem;
     }
 
-    .header-card, 
-    .emergency-section, 
-    .active-emergency-section {
-        grid-column: span 2; /* ヘッダーと緊急事態は常に全幅 */
+    .section-title {
+        font-size: 1.3rem;
+    }
+
+    .input-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .input-text, .input-select, .add-button {
+        width: 100%;
+        min-width: unset;
     }
     
-    /* グリッドレイアウトでコンテンツを配置 */
-    .main-content {
-        display: contents; 
-    }
-
-    /* シフトと混雑を右側のグリッド列に配置 */
-    .shift-section, .crowd-section {
-        grid-column: 2 / 3; 
-    }
-
-    /* タスクと落とし物を左側のグリッド列に配置 */
-    .task-section, .lost-found-section {
-        grid-column: 1 / 2; 
+    .list-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
     }
     
-    /* 混雑状況のフォームのセレクトボックスを横に並べる */
-    #crowd-form select {
-        flex-grow: 1;
-        max-width: 45%; 
-    }
-
-    /* 役員シフトの入力フォーム要素の調整 */
-    #shift-form .time-input-group {
-        flex-basis: 40%;
-    }
-    #shift-form input[type="text"] {
-        flex-basis: 25%;
-        flex-grow: 1;
-    }
-}
-
-/* 1024px以上の画面 (大型デスクトップ) */
-@media (min-width: 1024px) {
-    .time-text {
-        font-size: 5em;
+    .delete-button {
+        margin-left: 0;
+        margin-top: 5px;
+        align-self: flex-end;
     }
 }

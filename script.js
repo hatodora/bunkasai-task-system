@@ -1,439 +1,307 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // ⚠️ Firebaseの設定がindex.htmlで完了していることを前提とします。
-    // ------------------------------------------
-    // --- 1. Firebase データベースの参照を取得 ---
-    // ------------------------------------------
-    const database = firebase.database();
-    
-    // データ格納用の参照パスを定義
-    const tasksRef = database.ref('tasks');
-    const lostFoundsRef = database.ref('lost-founds');
-    const shiftsRef = database.ref('shifts');
-    const crowdsRef = database.ref('crowds');
-    // ------------------------------------------
+// ==========================================================
+// 1. Firebase参照の定義
+//    - index.htmlで初期化されたグローバル変数 `database` を使用
+// ==========================================================
 
-    // --- 2. DOM要素の取得 ---
-    const timeElement = document.getElementById('current-time');
-    const dateElement = document.getElementById('current-date');
-    const weatherElement = document.getElementById('weather');
-    const weatherIconElement = document.getElementById('weather-icon');
+// NOTE: Firebaseの初期化設定（firebaseConfig, firebase.initializeApp, firebase.database()）は
+//       index.htmlの <script> タグ内に配置されています。
+//       このファイルでは、index.htmlで定義された 'database' 変数が利用可能です。
+//       もしエラーが出る場合は、index.html内の初期化が正しく行われているか確認してください。
 
-    const taskForm = document.getElementById('task-form');
-    const taskInput = document.getElementById('task-input');
-    const taskList = document.getElementById('task-list');
-    const taskHistoryList = document.getElementById('task-history-list');
-    const toggleTaskHistoryButton = document.getElementById('toggle-task-history');
+// グローバルな database 変数が定義されていることを想定
+const database = firebase.database(); 
 
-    const lostFoundForm = document.getElementById('lost-found-form');
-    const lostFoundItemInput = document.getElementById('lost-found-item-input');
-    const lostFoundLocationInput = document.getElementById('lost-found-location-input');
-    const lostFoundList = document.getElementById('lost-found-list');
-    const lostFoundHistoryList = document.getElementById('lost-found-history-list');
-    const toggleLostFoundHistoryButton = document.getElementById('toggle-lost-found-history');
+// 各データベースノードへの参照
+const refs = {
+    tasks: database.ref('tasks'),
+    // emergencyノードをシンプルに保つ
+    emergency: database.ref('emergency'), 
+    lostFound: database.ref('lostFound'),
+    shifts: database.ref('shifts'),
+    status: database.ref('status')
+};
 
-    const emergencySelect = document.getElementById('emergency-select');
-    const alertButton = document.getElementById('alert-button');
-    const alertOverlay = document.getElementById('alert-overlay');
-    const alertMessage = document.getElementById('alert-message');
-    const alertOkButton = document.getElementById('alert-ok-button');
-    const alertCancelButton = document.getElementById('alert-cancel-button');
-    const fullScreenAlert = document.getElementById('full-screen-alert');
-    const fullScreenMessage = document.getElementById('full-screen-message');
-    
-    const activeEmergencySection = document.getElementById('active-emergency-section');
-    const activeEmergencyMessage = document.getElementById('active-emergency-message');
-    const resolveButton = document.getElementById('resolve-button');
+// ==========================================================
+// 2. ユーティリティ関数
+// ==========================================================
 
-    const shiftTableBody = document.querySelector('#shift-table tbody');
-    const shiftForm = document.getElementById('shift-form');
-    const shiftStartTimeInput = document.getElementById('shift-start-time-input');
-    const shiftEndTimeInput = document.getElementById('shift-end-time-input');
-    const shiftPersonInput = document.getElementById('shift-person-input');
-    const shiftRoleInput = document.getElementById('shift-role-input');
-    const crowdForm = document.getElementById('crowd-form');
-    const crowdLocationInput = document.getElementById('crowd-location-input');
-    const crowdStatusInput = document.getElementById('crowd-status-input');
-    const crowdList = document.getElementById('crowd-list');
+/**
+ * タイムスタンプを読みやすい形式に変換する
+ */
+function formatTimestamp(timestamp) {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    const h = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${y}/${m}/${d} ${h}:${min}`;
+}
 
-    let isResolving = false;
-    let currentEmergency = '';
+/**
+ * 現在の日時をヘッダーに表示する (ID: current-time)
+ */
+function updateClock() {
+    const currentTimeEl = document.getElementById('current-time');
+    if (!currentTimeEl) return;
+    const now = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    currentTimeEl.textContent = now.toLocaleDateString('ja-JP', options);
+}
+setInterval(updateClock, 1000); 
+updateClock();
 
-    // --- 3. 天気APIの設定と関数 ---
-    const WEATHER_API_URL = "https://api.open-meteo.com/v1/forecast?latitude=35.658&longitude=139.701&current=temperature_2m,precipitation_probability,weather_code&timezone=Asia%2FTokyo&forecast_days=1";
 
-    function getWeatherDisplay(code) {
-        if (code === 0) return { icon: '☀️', text: '晴れ' };
-        if (code >= 1 && code <= 3) return { icon: '🌤️', text: 'おおむね晴れ' };
-        if (code >= 45 && code <= 48) return { icon: '🌫️', text: '霧' };
-        if (code >= 51 && code <= 55) return { icon: ' drizzle', text: '霧雨' };
-        if (code >= 61 && code <= 65) return { icon: '🌧️', text: '雨' };
-        if (code >= 71 && code <= 75) return { icon: '❄️', text: '雪' };
-        if (code >= 80 && code <= 82) return { icon: '☔️', text: 'にわか雨' };
-        if (code >= 95 && code <= 99) return { icon: '⛈️', text: '雷雨' };
-        return { icon: '❓', text: '不明' };
-    }
+// NOTE: HTMLに <select> がないので populateTimeSelectors() は不要です。
 
-    async function updateWeather() {
-        try {
-            const response = await fetch(WEATHER_API_URL);
-            if (!response.ok) throw new Error('Failed to fetch weather data');
-            
-            const data = await response.json();
-            
-            const temp = data.current.temperature_2m;
-            const precipProb = data.current.precipitation_probability || 0; // %
-            const weatherCode = data.current.weather_code;
-            const weatherDisplay = getWeatherDisplay(weatherCode);
+// ==========================================================
+// 3. リアルタイムデータ処理とHTMLレンダリング
+// ==========================================================
 
-            weatherIconElement.textContent = weatherDisplay.icon;
-            weatherElement.textContent = `${Math.round(temp)}°C ${weatherDisplay.text} (降水: ${precipProb}%)`; 
+// --- A. 処理中のタスク (ID: task-list, new-task-input, add-task-btn) ---
+const taskListEl = document.getElementById('task-list');
 
-        } catch (error) {
-            console.error("天気情報の取得に失敗しました:", error);
-            weatherElement.textContent = '天気情報取得エラー';
-            weatherIconElement.textContent = '⚠️';
-        }
-    }
+refs.tasks.on('value', (snapshot) => {
+    taskListEl.innerHTML = '';
+    const tasks = snapshot.val();
+    if (!tasks) return;
 
-    // --- 4. リアルタイムデータリスナーとレンダリング関数 ---
-
-    // タスクのリアルタイム更新
-    tasksRef.on('value', (snapshot) => {
-        taskList.innerHTML = ''; 
-        taskHistoryList.innerHTML = ''; 
+    // 新しいタスクを上に表示するため、キーを逆順に取得
+    const keys = Object.keys(tasks).reverse(); 
+    keys.forEach(key => {
+        const task = tasks[key];
+        const listItem = document.createElement('div');
+        listItem.className = 'list-item';
         
-        snapshot.forEach((childSnapshot) => {
-            const taskKey = childSnapshot.key;
-            const task = childSnapshot.val();
-            
-            const isCompleted = task.completed || false;
-            const targetList = isCompleted ? taskHistoryList : taskList;
+        listItem.innerHTML = `
+            <div class="list-content">
+                <span class="list-text">${task.name}</span>
+                <span class="list-meta">追加: ${formatTimestamp(task.timestamp)}</span>
+            </div>
+            <button class="delete-button" data-key="${key}">&#x2714;</button> 
+        `;
+        taskListEl.appendChild(listItem);
+    });
 
-            const li = document.createElement('li');
-            li.textContent = task.text;
-
-            const completeButton = document.createElement('button');
-            completeButton.textContent = isCompleted ? '未完了に戻す' : '完了';
-            completeButton.className = isCompleted ? 'btn danger-btn small-btn' : 'btn accent-btn small-btn';
-            
-            completeButton.onclick = () => {
-                tasksRef.child(taskKey).update({ completed: !isCompleted });
-            };
-            
-            li.appendChild(completeButton);
-            if (isCompleted) {
-                li.classList.add('complete');
-                targetList.prepend(li);
-            } else {
-                targetList.appendChild(li);
-            }
+    // イベントリスナーの再設定 (データ更新の度に必要)
+    taskListEl.querySelectorAll('.delete-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const key = e.currentTarget.dataset.key;
+            refs.tasks.child(key).remove();
         });
     });
+});
 
-    // 落とし物のリアルタイム更新
-    lostFoundsRef.on('value', (snapshot) => {
-        lostFoundList.innerHTML = '';
-        lostFoundHistoryList.innerHTML = '';
-        
-        snapshot.forEach((childSnapshot) => {
-            const lfKey = childSnapshot.key;
-            const lf = childSnapshot.val();
-            
-            const isResolved = lf.resolved || false;
-            const targetList = isResolved ? lostFoundHistoryList : lostFoundList;
-
-            const li = document.createElement('li');
-            li.innerHTML = `<strong>${lf.item}</strong><br>場所: ${lf.location}`;
-
-            const resolveButton = document.createElement('button');
-            resolveButton.textContent = isResolved ? '未解決に戻す' : '解決';
-            resolveButton.className = isResolved ? 'btn danger-btn small-btn' : 'btn accent-btn small-btn';
-            
-            resolveButton.onclick = () => {
-                lostFoundsRef.child(lfKey).update({ resolved: !isResolved });
-            };
-            
-            li.appendChild(resolveButton);
-            if (isResolved) {
-                li.classList.add('complete');
-                li.innerHTML += `<span style="font-size:0.8em; color:#34c759;"> (解決済)</span>`;
-                targetList.prepend(li);
-            } else {
-                targetList.appendChild(li);
-            }
+document.getElementById('add-task-btn').addEventListener('click', () => {
+    const input = document.getElementById('new-task-input');
+    const taskName = input.value.trim();
+    if (taskName) {
+        refs.tasks.push({
+            name: taskName,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
         });
+        input.value = '';
+    }
+});
+
+// --- B. 緊急事態 (ID: emergency-display, emergency-status, update-emergency-btn) ---
+const emergencyDisplayEl = document.getElementById('emergency-display');
+const emergencySelectEl = document.getElementById('emergency-status');
+
+// 読み取りリスナー: データが変更されたら画面を更新
+refs.emergency.on('value', (snapshot) => {
+    const status = snapshot.val();
+    
+    // データ構造は {value: '発生', timestamp: 123456789} を想定
+    if (status && status.value) {
+        const text = `${status.value} (${formatTimestamp(status.timestamp)})`;
+        emergencyDisplayEl.textContent = text;
+        
+        // スタイル変更ロジック
+        if (status.value === '発生' || status.value === '警報発令') {
+            emergencyDisplayEl.style.backgroundColor = '#fee2e2'; // Light Red
+            emergencyDisplayEl.style.color = '#dc2626'; // Dark Red
+            emergencyDisplayEl.style.border = '2px solid #dc2626';
+        } else {
+            // 解除、またはその他の通常ステータス
+            emergencyDisplayEl.textContent = status.value === '解除' ? '状況解除' : text;
+            emergencyDisplayEl.style.backgroundColor = '#d1d5db'; // Gray
+            emergencyDisplayEl.style.color = '#1f2937'; 
+            emergencyDisplayEl.style.border = '1px solid #9ca3af';
+        }
+    } else {
+        // データがない場合（初期状態または完全に削除された場合）
+        emergencyDisplayEl.textContent = '緊急状況なし';
+        emergencyDisplayEl.style.backgroundColor = '#f3f4f6';
+        emergencyDisplayEl.style.color = '#6b7280';
+        emergencyDisplayEl.style.border = 'none';
+    }
+});
+
+// 書き込みリスナー: 更新ボタンが押されたらデータをセット（上書き）
+document.getElementById('update-emergency-btn').addEventListener('click', () => {
+    const value = emergencySelectEl.value;
+    if (value) {
+        // set() メソッドでノード全体を上書きし、常に最新の状況のみを保持する
+        refs.emergency.set({ 
+            value: value,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        emergencySelectEl.value = '';
+    }
+});
+
+
+// --- C. 落とし物・連絡事項 (ID: lost-item-list, lost-item-name, lost-item-location, add-lost-item-btn) ---
+const lostFoundListEl = document.getElementById('lost-item-list');
+
+refs.lostFound.on('value', (snapshot) => {
+    lostFoundListEl.innerHTML = '';
+    const items = snapshot.val();
+    if (!items) return;
+
+    const keys = Object.keys(items).reverse();
+    keys.forEach(key => {
+        const item = items[key];
+        const listItem = document.createElement('div');
+        listItem.className = 'list-item';
+        listItem.innerHTML = `
+            <div class="list-content">
+                <span class="list-text">品名: ${item.name} / 場所: ${item.location}</span>
+                <span class="list-meta">報告: ${formatTimestamp(item.timestamp)}</span>
+            </div>
+            <button class="delete-button" data-key="${key}">削除</button>
+        `;
+        lostFoundListEl.appendChild(listItem);
     });
 
-    // シフトのレンダリングとチェック
-    function renderAndCheckShifts(shiftsData) {
-        shiftTableBody.innerHTML = '';
-        const now = new Date();
-        const currentDateStr = now.toISOString().slice(0, 10);
-        const currentTime = now.getTime();
-        
-        const shiftsArray = Object.keys(shiftsData || {}).map(key => ({
-            key: key,
-            ...shiftsData[key]
-        }));
-
-        shiftsArray.forEach((shift) => {
-            const startTimestamp = Date.parse(`${currentDateStr}T${shift.startTime}:00`);
-            const endTimestamp = Date.parse(`${currentDateStr}T${shift.endTime}:00`);
-
-            // 終了時刻を過ぎたら自動でDBから削除
-            if (currentTime > endTimestamp) {
-                shiftsRef.child(shift.key).remove();
-                return; 
-            }
-            
-            const row = document.createElement('tr');
-            row.dataset.key = shift.key;
-            
-            row.innerHTML = `
-                <td class="shift-time-cell">${shift.startTime}〜${shift.endTime}</td>
-                <td>${shift.person}</td>
-                <td>${shift.role}</td>
-                <td><button class="end-shift-btn">終了済み</button></td>
-            `;
-
-            if (currentTime >= startTimestamp && currentTime < endTimestamp) {
-                row.classList.add('active-shift');
-            }
-
-            shiftTableBody.appendChild(row);
+    lostFoundListEl.querySelectorAll('.delete-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const key = e.currentTarget.dataset.key;
+            refs.lostFound.child(key).remove();
         });
+    });
+});
+
+document.getElementById('add-lost-item-btn').addEventListener('click', () => {
+    const nameInput = document.getElementById('lost-item-name');
+    const locationInput = document.getElementById('lost-item-location');
+    const name = nameInput.value.trim();
+    const location = locationInput.value.trim();
+
+    if (name && location) {
+        refs.lostFound.push({
+            name: name,
+            location: location,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        nameInput.value = '';
+        locationInput.value = '';
+    }
+});
+
+// --- D. 役員シフト/担当者割当 (ID: shift-list, shift-time-start, shift-time-end, shift-person, shift-role, add-shift-btn) ---
+const shiftListEl = document.getElementById('shift-list');
+
+refs.shifts.on('value', (snapshot) => {
+    shiftListEl.innerHTML = '';
+    const items = snapshot.val();
+    if (!items) return;
+
+    const keys = Object.keys(items).reverse();
+    keys.forEach(key => {
+        const shift = items[key];
+        const listItem = document.createElement('div');
+        listItem.className = 'list-item';
         
-        // イベントリスナーを再設定
-        document.querySelectorAll('.end-shift-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const row = e.target.closest('tr');
-                const key = row.dataset.key;
-                shiftsRef.child(key).remove(); 
-            });
+        // NOTE: HTML側で <select> の ID が `shift-time-start` と `shift-time-end` であることを想定
+        listItem.innerHTML = `
+            <div class="list-content">
+                <span class="list-text">${shift.start}〜${shift.end} | 担当: ${shift.person} (${shift.role})</span>
+                <span class="list-meta">登録: ${formatTimestamp(shift.timestamp)}</span>
+            </div>
+            <button class="delete-button" data-key="${key}">削除</button>
+        `;
+        shiftListEl.appendChild(listItem);
+    });
+
+    shiftListEl.querySelectorAll('.delete-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const key = e.currentTarget.dataset.key;
+            refs.shifts.child(key).remove();
+        });
+    });
+});
+
+document.getElementById('add-shift-btn').addEventListener('click', () => {
+    const shiftTimeStartEl = document.getElementById('shift-time-start');
+    const shiftTimeEndEl = document.getElementById('shift-time-end');
+    const personInput = document.getElementById('shift-person');
+    const roleInput = document.getElementById('shift-role');
+    
+    // HTML側で時刻のセレクトボックスが必須
+    const start = shiftTimeStartEl.value;
+    const end = shiftTimeEndEl.value;
+    const person = personInput.value.trim();
+    const role = roleInput.value.trim();
+
+    if (start && end && person && role) {
+        refs.shifts.push({
+            start: start,
+            end: end,
+            person: person,
+            role: role,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        personInput.value = '';
+        roleInput.value = '';
+    }
+});
+
+
+// --- E. 混雑状況の共有 (ID: status-display-area, status-location, status-level, update-status-btn) ---
+const statusDisplayAreaEl = document.getElementById('status-display-area');
+
+refs.status.on('value', (snapshot) => {
+    statusDisplayAreaEl.innerHTML = '';
+    const statuses = snapshot.val();
+    if (!statuses) return;
+
+    // 状況を場所ごとに表示 (Statusesはオブジェクトで、キーが場所名)
+    // Object.keysで場所のリストを取得
+    Object.keys(statuses).forEach(locationKey => {
+        const status = statuses[locationKey];
+        const listItem = document.createElement('div');
+        listItem.className = 'list-item';
+        
+        // 混雑レベルに応じた色分け (CSSの border-left-color に適用)
+        let color = '#3b82f6'; // Default Blue
+        if (status.level === '大変混雑') color = '#dc2626'; // Red
+        else if (status.level === 'やや混雑') color = '#f59e0b'; // Amber
+        
+        listItem.style.borderLeftColor = color;
+        
+        listItem.innerHTML = `
+            <div class="list-content">
+                <span class="list-text">場所: ${status.location} / 状況: ${status.level}</span>
+                <span class="list-meta">最終更新: ${formatTimestamp(status.timestamp)}</span>
+            </div>
+        `;
+        statusDisplayAreaEl.appendChild(listItem);
+    });
+});
+
+document.getElementById('update-status-btn').addEventListener('click', () => {
+    const location = document.getElementById('status-location').value;
+    const level = document.getElementById('status-level').value;
+
+    if (location && level) {
+        // 場所をキー（ノード名）にして上書き保存する
+        refs.status.child(location).set({
+            location: location,
+            level: level,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
         });
     }
-
-    // シフトのリアルタイムリスナー
-    shiftsRef.on('value', (snapshot) => {
-        renderAndCheckShifts(snapshot.val()); 
-    });
-
-    // 混雑状況のリアルタイムリスナー
-    crowdsRef.on('value', (snapshot) => {
-        const crowdData = snapshot.val() || {}; 
-        crowdList.innerHTML = '';
-        
-        for (const location in crowdData) {
-            const status = crowdData[location];
-            const li = document.createElement('li');
-            li.innerHTML = `<strong>${location}:</strong> <span class="crowd-status crowd-status-${status}">${status}</span>`;
-            crowdList.appendChild(li);
-        }
-    });
-
-
-    // --- 5. 時刻更新とユーティリティ関数 ---
-
-    // 現在の時刻と日付を表示し、シフトステータスを更新
-    function updateDateTime() {
-        const now = new Date();
-        timeElement.textContent = now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
-        dateElement.textContent = now.toLocaleDateString('ja-JP', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        
-        // シフトの状態をチェックし、DOMのクラスを更新
-        const currentDateStr = now.toISOString().slice(0, 10);
-        const currentTime = now.getTime();
-
-        document.querySelectorAll('#shift-table tr').forEach(row => {
-            const timeCell = row.querySelector('td.shift-time-cell');
-            if (!timeCell) return;
-            
-            const timeRange = timeCell.textContent.split('〜');
-            const [startTimeStr, endTimeStr] = timeRange;
-            if (!startTimeStr || !endTimeStr) return;
-
-            const startTimestamp = Date.parse(`${currentDateStr}T${startTimeStr}:00`);
-            const endTimestamp = Date.parse(`${currentDateStr}T${endTimeStr}:00`);
-            
-            if (currentTime >= startTimestamp && currentTime < endTimestamp) {
-                row.classList.add('active-shift');
-            } else {
-                row.classList.remove('active-shift');
-            }
-        });
-    }
-    
-    // 履歴表示のトグル関数
-    function toggleHistory(historyList, button) {
-        if (historyList.style.display === 'none') {
-            historyList.style.display = 'block';
-            button.textContent = button.textContent.replace('を表示', 'を非表示');
-        } else {
-            historyList.style.display = 'none';
-            button.textContent = button.textContent.replace('を非表示', 'を表示');
-        }
-    }
-
-    // --- 6. イベントリスナー (データベース書き込み) ---
-
-    // タスクフォームの送信
-    taskForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (taskInput.value.trim() !== '') {
-            const newTask = {
-                text: taskInput.value.trim(),
-                timestamp: Date.now(),
-                completed: false 
-            };
-            tasksRef.push(newTask); 
-            taskInput.value = '';
-        }
-    });
-    
-    // タスク履歴のトグル
-    toggleTaskHistoryButton.addEventListener('click', () => {
-        toggleHistory(taskHistoryList, toggleTaskHistoryButton);
-    });
-
-    // 落とし物フォームの送信
-    lostFoundForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (lostFoundItemInput.value.trim() !== '' && lostFoundLocationInput.value.trim() !== '') {
-            const newLostFound = {
-                item: lostFoundItemInput.value.trim(),
-                location: lostFoundLocationInput.value.trim(),
-                timestamp: Date.now(),
-                resolved: false
-            };
-            lostFoundsRef.push(newLostFound);
-            lostFoundItemInput.value = '';
-            lostFoundLocationInput.value = '';
-        }
-    });
-
-    // 落とし物履歴のトグル
-    toggleLostFoundHistoryButton.addEventListener('click', () => {
-        toggleHistory(lostFoundHistoryList, toggleLostFoundHistoryButton);
-    });
-
-    // シフトフォームの送信
-    shiftForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const startTime = shiftStartTimeInput.value;
-        const endTime = shiftEndTimeInput.value;
-        if (!startTime || !endTime || !shiftPersonInput.value || !shiftRoleInput.value) {
-             alert('すべてのシフト情報を入力してください。');
-             return;
-        }
-
-        const newShift = {
-            startTime: startTime,
-            endTime: endTime,
-            person: shiftPersonInput.value,
-            role: shiftRoleInput.value
-        };
-        shiftsRef.push(newShift);
-        shiftForm.reset();
-    });
-
-    // 混雑状況フォームの送信
-    crowdForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const location = crowdLocationInput.value;
-        const status = crowdStatusInput.value;
-        if (location && status) {
-            crowdsRef.child(location).set(status); 
-            crowdForm.reset();
-        } else {
-            alert('場所と状況を選択してください。');
-        }
-    });
-
-    // 警報関連の処理 (省略なし)
-    alertOkButton.addEventListener('click', () => {
-        if (isResolving) {
-            alertOverlay.style.display = 'none';
-            activeEmergencySection.style.display = 'none';
-            currentEmergency = '';
-            isResolving = false;
-        } else {
-            const selectedEmergency = emergencySelect.value;
-            alertOverlay.style.display = 'none';
-            fullScreenMessage.textContent = selectedEmergency;
-            fullScreenAlert.style.display = 'flex';
-            currentEmergency = selectedEmergency;
-
-            setTimeout(() => {
-                fullScreenAlert.style.display = 'none';
-                activeEmergencyMessage.textContent = currentEmergency;
-                activeEmergencySection.style.display = 'flex';
-            }, 10000);
-        }
-    });
-
-    alertCancelButton.addEventListener('click', () => {
-        alertOverlay.style.display = 'none';
-        isResolving = false;
-    });
-
-    alertButton.addEventListener('click', () => {
-        const selectedEmergency = emergencySelect.value;
-        if (selectedEmergency) {
-            alertMessage.textContent = `${selectedEmergency}が発生しました。これで警報を発しますか？`;
-            alertOverlay.style.display = 'flex';
-            isResolving = false;
-        } else {
-            alert('緊急事態を選択してください。');
-        }
-    });
-
-    resolveButton.addEventListener('click', () => {
-        if (currentEmergency) {
-            alertMessage.textContent = `${currentEmergency}は解決しましたか？`;
-            alertOverlay.style.display = 'flex';
-            isResolving = true;
-        } else {
-            alert('現在発令中の緊急事態はありません。');
-        }
-    });
-
-    // --- 7. 初期化とタイマー設定 ---
-    
-    // 1秒ごとに時刻を更新（シフトのハイライトチェックも含む）
-    setInterval(updateDateTime, 1000);
-    // 10分ごとに天気を更新
-    setInterval(updateWeather, 600000); 
-
-    updateDateTime();
-    updateWeather();
-
-
-    // --- 8. 開発補助機能: 自動リロード設定 ---
-    // ⚠️ 本番環境にデプロイする際は、この機能全体を削除してください。
-    (function setupAutoReload() {
-        const RELOAD_INTERVAL_MS = 3000; 
-        let lastModified = null;
-
-        function fetchLastModified() {
-            fetch(window.location.href, { cache: 'no-store', method: 'HEAD' })
-                .then(response => {
-                    const currentLastModified = response.headers.get('Last-Modified');
-                    
-                    if (currentLastModified) {
-                        if (lastModified === null) {
-                            lastModified = currentLastModified;
-                            console.log('自動リロード監視を開始しました。');
-                        } else if (lastModified !== currentLastModified) {
-                            console.log('ファイルの変更を検出しました。リロードします...');
-                            window.location.reload(true);
-                        }
-                    }
-                })
-                .catch(error => {
-                    // console.warn('自動リロードチェック中にエラーが発生しました:', error);
-                });
-        }
-
-        setInterval(fetchLastModified, RELOAD_INTERVAL_MS);
-    })();
 });
