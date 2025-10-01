@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文化祭 役員連絡システム</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+<body>
+    <div class="background-blur"></div>
+    <div class="container">
+        <header class="card header-card">
+            <h2 id="current-date" class="date-text"></h2>
+            <div class="time-weather">
+                <h1 id="current-time" class="time-text"></h1>
+                <div class="weather-info">
+                    <span id="weather-icon" class="weather-icon"></span>
+                    <span id="weather" class="weather-text"></span>
+                </div>
+            </div>
+        </header>
+
+        <section class="emergency-section card">
+            <h2 class="card-title">緊急事態</h2>
+            <div class="emergency-controls">
+                <select id="emergency-select">
+                    <option value="">緊急事態を選択...</option>
+                    <option value="強風">強風</option>
+                    <option value="降水">降水</option>
+                    <option value="人身事故">人身事故</option>
+                    <option value="火事">火事</option>
+                    <option value="不審者">不審者</option>
+                </select>
+                <button id="alert-button" class="btn primary-btn">警報発令</button>
+            </div>
+        </section>
+
+        <section id="active-emergency-section" class="active-emergency-section card" style="display: none;">
+            <h2 class="card-title">現在の緊急事態</h2>
+            <h3 id="active-emergency-message"></h3>
+            <button id="resolve-button" class="btn danger-btn">問題解決</button>
+        </section>
+
+        <main class="main-content">
+            <section class="task-section card">
+                <div class="card-header-flex">
+                    <h2 class="card-title">処理中のタスク <span class="material-icons-outlined">task_alt</span></h2>
+                    <button id="toggle-task-history" class="btn secondary-btn">履歴を表示</button>
+                </div>
+                <ul id="task-list">
+                </ul>
+                <ul id="task-history-list" class="history-list" style="display: none;">
+                </ul>
+                <form id="task-form" class="input-form">
+                    <input type="text" id="task-input" placeholder="新しいタスクを追加..." required>
+                    <button type="submit" class="btn accent-btn">追加</button>
+                </form>
+            </section>
+
+            <section class="lost-found-section card">
+                <div class="card-header-flex">
+                    <h2 class="card-title">落とし物 <span class="material-icons-outlined">search</span></h2>
+                    <button id="toggle-lost-found-history" class="btn secondary-btn">解決済みを表示</button>
+                </div>
+                <ul id="lost-found-list">
+                </ul>
+                <ul id="lost-found-history-list" class="history-list" style="display: none;">
+                </ul>
+                <form id="lost-found-form" class="input-form">
+                    <input type="text" id="lost-found-item-input" placeholder="品名" required>
+                    <input type="text" id="lost-found-location-input" placeholder="場所" required>
+                    <button type="submit" class="btn accent-btn">追加</button>
+                </form>
+            </section>
+            
+            <section class="shift-section card">
+                <h2 class="card-title">役員シフト <span class="material-icons-outlined">calendar_today</span></h2>
+                <table id="shift-table" class="shift-table">
+                    <thead>
+                        <tr>
+                            <th>時間</th>
+                            <th>担当者</th>
+                            <th>役割</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+                <form id="shift-form" class="input-form">
+                    <div class="time-input-group">
+                        <input type="time" id="shift-start-time-input" required>
+                        <span>〜</span>
+                        <input type="time" id="shift-end-time-input" required>
+                    </div>
+                    <input type="text" id="shift-person-input" placeholder="担当者" required>
+                    <input type="text" id="shift-role-input" placeholder="役割" required>
+                    <button type="submit" class="btn accent-btn">追加</button>
+                </form>
+            </section>
+
+            <section class="crowd-section card">
+                <h2 class="card-title">混雑状況 <span class="material-icons-outlined">groups</span></h2>
+                <ul id="crowd-list">
+                    </ul>
+                <form id="crowd-form" class="input-form">
+                    <select id="crowd-location-input" class="crowd-select">
+                        <option value="">場所を選択...</option>
+                        <option value="出入り口">出入り口</option>
+                        <option value="学友会本部">学友会本部</option>
+                        <option value="サレジアンモール">サレジアンモール</option>
+                        <option value="調理場">調理場</option>
+                    </select>
+                    <select id="crowd-status-input" class="crowd-select">
+                        <option value="">状況を選択...</option>
+                        <option value="空いています">空いています</option>
+                        <option value="普通">普通</option>
+                        <option value="混雑">混雑</option>
+                        <option value="入場制限中">入場制限中</option>
+                    </select>
+                    <button type="submit" class="btn accent-btn">更新</button>
+                </form>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="alert-overlay" class="alert-overlay">
+        <div class="alert-box">
+            <div class="alert-header">
+                <span class="alert-indicator">警告</span>
+            </div>
+            <div class="alert-body">
+                <h1 id="alert-message"></h1>
+                <p>OKボタンを押すと、この警告が発令されます。</p>
+                <div class="button-group">
+                    <button id="alert-ok-button" class="btn ok-button">OK</button>
+                    <button id="alert-cancel-button" class="btn cancel-button">キャンセル</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="full-screen-alert" class="full-screen-alert">
+        <div class="full-screen-content">
+            <span class="warning-text">EMERGENCY</span>
+            <h1 id="full-screen-message"></h1>
+            <span class="warning-text">EMERGENCY</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // このfirebaseConfigの中身は、あなたの環境に合わせて置き換えてください
+        const firebaseConfig = {
+            apiKey: "AIzaSyCC3y2RqmnDyUOEp0fP3L78ucwrtCTC6Hk",
+  authDomain: "bunkasai-task-system.firebaseapp.com",
+  databaseURL: "https://bunkasai-task-system-default-rtdb.firebaseio.com",
+  projectId: "bunkasai-task-system",
+  storageBucket: "bunkasai-task-system.firebasestorage.app",
+  messagingSenderId: "919831201875",
+  appId: "1:919831201875:web:8e5d5c7d5b93a51c5f1ea6",
+  measurementId: "G-S4QDHV7C55"
+        };
+
+        // Firebaseを初期化
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="script.js"></script> 
+</body>
+</html>
+
+
